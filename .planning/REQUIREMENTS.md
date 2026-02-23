@@ -7,8 +7,8 @@
 
 ### Infrastructure
 
-- [ ] **INFRA-01**: System loads all configuration (DB URL, API keys, Discord webhook, detection thresholds) from environment variables with validation at startup
-- [ ] **INFRA-02**: System fails fast with a clear error message if any required config is missing
+- [x] **INFRA-01**: System loads all configuration (DB URL, API keys, Discord webhook, detection thresholds) from environment variables with validation at startup
+- [x] **INFRA-02**: System fails fast with a clear error message if any required config is missing
 - [ ] **INFRA-03**: PostgreSQL database schema is managed with Alembic migrations (tables: markets, signals, price_snapshots)
 - [ ] **INFRA-04**: System runs a continuous market discovery loop (every ~5 minutes) that fetches all active Polymarket markets and stores new ones
 - [ ] **INFRA-05**: System runs a continuous price polling loop (every ~1 minute) that fetches current prices for tracked markets and drives signal detection
@@ -17,9 +17,9 @@
 
 ### API Clients
 
-- [ ] **CLIENT-01**: Polymarket Gamma API client reliably fetches all active markets with pagination (question, end_date, resolved status, outcome_prices, liquidityCLOB)
+- [x] **CLIENT-01**: Polymarket Gamma API client reliably fetches all active markets with pagination (question, end_date, resolved status, outcome_prices, liquidityCLOB)
 - [ ] **CLIENT-02**: Polymarket CLOB API client fetches current best bid/ask prices and order book liquidity for given market IDs
-- [ ] **CLIENT-03**: Both API clients handle rate limits and transient errors with retry logic
+- [x] **CLIENT-03**: Both API clients handle rate limits and transient errors with retry logic
 
 ### Signal Detection
 
@@ -93,16 +93,16 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| INFRA-01 | Phase 1 | Pending |
-| INFRA-02 | Phase 1 | Pending |
+| INFRA-01 | Phase 1 | Complete |
+| INFRA-02 | Phase 1 | Complete |
 | INFRA-03 | Phase 1 | Pending |
 | INFRA-04 | Phase 2 | Pending |
 | INFRA-05 | Phase 2 | Pending |
 | INFRA-06 | Phase 2 | Pending |
 | INFRA-07 | Phase 2 | Pending |
-| CLIENT-01 | Phase 1 | Pending |
+| CLIENT-01 | Phase 1 | Complete |
 | CLIENT-02 | Phase 2 | Pending |
-| CLIENT-03 | Phase 1 | Pending |
+| CLIENT-03 | Phase 1 | Complete |
 | DETECT-01 | Phase 3 | Pending |
 | DETECT-02 | Phase 3 | Pending |
 | DETECT-03 | Phase 3 | Pending |
