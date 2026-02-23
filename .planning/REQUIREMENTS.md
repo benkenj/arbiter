@@ -9,7 +9,7 @@
 
 - [x] **INFRA-01**: System loads all configuration (DB URL, API keys, Discord webhook, detection thresholds) from environment variables with validation at startup
 - [x] **INFRA-02**: System fails fast with a clear error message if any required config is missing
-- [ ] **INFRA-03**: PostgreSQL database schema is managed with Alembic migrations (tables: markets, signals, price_snapshots)
+- [x] **INFRA-03**: PostgreSQL database schema is managed with Alembic migrations (tables: markets, signals, price_snapshots)
 - [ ] **INFRA-04**: System runs a continuous market discovery loop (every ~5 minutes) that fetches all active Polymarket markets and stores new ones
 - [ ] **INFRA-05**: System runs a continuous price polling loop (every ~1 minute) that fetches current prices for tracked markets and drives signal detection
 - [ ] **INFRA-06**: Polling loops recover from transient errors (API failures, DB errors) without crashing the process
@@ -95,7 +95,7 @@
 |-------------|-------|--------|
 | INFRA-01 | Phase 1 | Complete |
 | INFRA-02 | Phase 1 | Complete |
-| INFRA-03 | Phase 1 | Pending |
+| INFRA-03 | Phase 1 | Complete |
 | INFRA-04 | Phase 2 | Pending |
 | INFRA-05 | Phase 2 | Pending |
 | INFRA-06 | Phase 2 | Pending |
