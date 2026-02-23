@@ -91,42 +91,40 @@
 
 ## Traceability
 
-*Populated during roadmap creation.*
-
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| INFRA-01 | — | Pending |
-| INFRA-02 | — | Pending |
-| INFRA-03 | — | Pending |
-| INFRA-04 | — | Pending |
-| INFRA-05 | — | Pending |
-| INFRA-06 | — | Pending |
-| INFRA-07 | — | Pending |
-| CLIENT-01 | — | Pending |
-| CLIENT-02 | — | Pending |
-| CLIENT-03 | — | Pending |
-| DETECT-01 | — | Pending |
-| DETECT-02 | — | Pending |
-| DETECT-03 | — | Pending |
-| DETECT-04 | — | Pending |
-| STORE-01 | — | Pending |
-| STORE-02 | — | Pending |
-| STORE-03 | — | Pending |
-| TRACK-01 | — | Pending |
-| TRACK-02 | — | Pending |
-| TRACK-03 | — | Pending |
-| TRACK-04 | — | Pending |
-| NOTIFY-01 | — | Pending |
-| NOTIFY-02 | — | Pending |
-| REPORT-01 | — | Pending |
-| REPORT-02 | — | Pending |
-| REPORT-03 | — | Pending |
+| INFRA-01 | Phase 1 | Pending |
+| INFRA-02 | Phase 1 | Pending |
+| INFRA-03 | Phase 1 | Pending |
+| INFRA-04 | Phase 2 | Pending |
+| INFRA-05 | Phase 2 | Pending |
+| INFRA-06 | Phase 2 | Pending |
+| INFRA-07 | Phase 2 | Pending |
+| CLIENT-01 | Phase 1 | Pending |
+| CLIENT-02 | Phase 2 | Pending |
+| CLIENT-03 | Phase 1 | Pending |
+| DETECT-01 | Phase 3 | Pending |
+| DETECT-02 | Phase 3 | Pending |
+| DETECT-03 | Phase 3 | Pending |
+| DETECT-04 | Phase 3 | Pending |
+| STORE-01 | Phase 3 | Pending |
+| STORE-02 | Phase 3 | Pending |
+| STORE-03 | Phase 3 | Pending |
+| TRACK-01 | Phase 4 | Pending |
+| TRACK-02 | Phase 4 | Pending |
+| TRACK-03 | Phase 4 | Pending |
+| TRACK-04 | Phase 4 | Pending |
+| NOTIFY-01 | Phase 4 | Pending |
+| NOTIFY-02 | Phase 4 | Pending |
+| REPORT-01 | Phase 5 | Pending |
+| REPORT-02 | Phase 5 | Pending |
+| REPORT-03 | Phase 5 | Pending |
 
 **Coverage:**
 - v1 requirements: 26 total
-- Mapped to phases: 0 (pending roadmap)
-- Unmapped: 26 ⚠️
+- Mapped to phases: 26
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-22*
-*Last updated: 2026-02-22 after initial definition*
+*Last updated: 2026-02-22 after roadmap creation*
