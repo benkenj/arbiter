@@ -75,7 +75,7 @@ Each task was committed atomically:
 
 1. **Task 1: Full pagination, retry, and parse hardening** - `1afc48b` (feat)
 
-**Plan metadata:** (pending)
+**Plan metadata:** `4e46f34` (docs)
 
 ## Files Created/Modified
 - `arbiter/clients/polymarket.py` - Rewritten with pagination, retry, _parse_market helper, _parse_json_field logging, httpx.Limits
