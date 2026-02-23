@@ -29,7 +29,13 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. `alembic upgrade head` applies the initial migration cleanly on a fresh PostgreSQL instance, creating the markets, signals, and price_snapshots tables with all indexes including the dedup partial unique index
   3. The Gamma API client fetches all active Polymarket markets with pagination and returns typed model objects — verified against the live API
   4. Transient API errors (network timeout, 5xx) trigger retry logic rather than crashing
-**Plans**: TBD
+**Plans**: 4 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Config system (pydantic-settings, .env.example, docker-compose, dependencies)
+- [ ] 01-02-PLAN.md — DB layer (SQLAlchemy ORM models, async session factory, Alembic migrations)
+- [ ] 01-03-PLAN.md — Gamma API client hardening (pagination, retry, parse fix)
+- [ ] 01-04-PLAN.md — Entry point rewrite (argparse, --check flag, startup health checks, logging)
 
 ### Phase 2: Data Collection
 **Goal**: Two concurrent async loops run continuously — discovery upserts market metadata every 5 minutes, polling fetches CLOB prices every 1 minute — and both survive transient failures without crashing.
@@ -83,7 +89,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/TBD | Not started | - |
+| 1. Foundation | 0/4 | Not started | - |
 | 2. Data Collection | 0/TBD | Not started | - |
 | 3. Signal Detection | 0/TBD | Not started | - |
 | 4. Resolution + Notifications | 0/TBD | Not started | - |
