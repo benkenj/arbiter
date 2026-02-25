@@ -12,7 +12,7 @@ Arbiter goes from a bare Polymarket API client to a live, self-validating signal
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Foundation** - Config system, DB schema + migrations, Gamma API reliability
+- [x] **Phase 1: Foundation** - Config system, DB schema + migrations, Gamma API reliability
 - [ ] **Phase 2: Data Collection** - CLOB client, market discovery loop, price polling loop
 - [ ] **Phase 3: Signal Detection** - Detector framework, longshot bias + time decay detectors, signal storage
 - [ ] **Phase 4: Resolution + Notifications** - Discord alerts, resolution tracking, signal state machine
@@ -89,7 +89,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 3/4 | In Progress|  |
+| 1. Foundation | 4/4 | Complete | 2026-02-25 |
 | 2. Data Collection | 0/TBD | Not started | - |
 | 3. Signal Detection | 0/TBD | Not started | - |
 | 4. Resolution + Notifications | 0/TBD | Not started | - |
