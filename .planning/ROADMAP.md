@@ -47,7 +47,11 @@ Plans:
   2. After starting the service, the markets table is populated with active binary Polymarket markets above configured volume/liquidity thresholds within 5 minutes
   3. When the Polymarket API returns an error during a discovery cycle, the loop logs the error and continues on the next tick — it does not exit
   4. Each discovery cycle emits a heartbeat log line, so silence in logs is detectable
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — Schema migration 002 (drop Signal/PriceSnapshot, add Trade/Wallet/Position) + ORM model update
+- [ ] 02-02-PLAN.md — Market filter config fields + discovery loop + main.py wiring
 
 ### Phase 3: Trade History
 **Goal**: The system ingests historical trade activity from Polymarket's CLOB API for all tracked markets, incrementally (only fetching new trades after the last ingestion timestamp), and stores wallet-level trade records suitable for win rate and volume computation.
@@ -106,7 +110,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 3/4 | In Progress | - |
-| 2. Data Collection | 0/TBD | Not started | - |
+| 2. Data Collection | 0/2 | Not started | - |
 | 3. Trade History | 0/TBD | Not started | - |
 | 4. Whale Identification | 0/TBD | Not started | - |
 | 5. Price Impact Analysis | 0/TBD | Not started | - |
