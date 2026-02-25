@@ -12,14 +12,12 @@
 - [x] **INFRA-02**: System fails fast with a clear error message if any required config is missing
 - [x] **INFRA-03**: PostgreSQL database schema is managed with Alembic migrations
 - [ ] **INFRA-04**: System runs a continuous market discovery loop (every ~5 minutes) that fetches active Polymarket markets matching configured filters and upserts them to the DB
-- [ ] **INFRA-05**: System runs a continuous price polling loop (every ~1 minute) that fetches current CLOB prices for tracked markets and stores snapshots
-- [ ] **INFRA-06**: Polling loops recover from transient errors (API failures, DB errors) without crashing the process
-- [ ] **INFRA-07**: Polling loops emit a heartbeat log line each cycle so silence is detectable
+- [ ] **INFRA-06**: Discovery loop recovers from transient errors (API failures, DB errors) without crashing the process
+- [ ] **INFRA-07**: Discovery loop emits a heartbeat log line each cycle so silence is detectable
 
 ### API Clients
 
 - [x] **CLIENT-01**: Polymarket Gamma API client reliably fetches all active markets with pagination
-- [ ] **CLIENT-02**: Polymarket CLOB API client fetches current best bid/ask prices for given market condition IDs
 - [x] **CLIENT-03**: API clients handle rate limits and transient errors with retry logic
 - [ ] **CLIENT-04**: Polymarket CLOB API client fetches trade history for a given market, with a `since` timestamp for incremental fetching
 
@@ -93,6 +91,7 @@
 | LLM-based market analysis | Expensive; deterministic scoring is sufficient for v1 |
 | Kelly criterion / position sizing | No execution = no positions to size |
 | Portfolio view | No execution = no portfolio |
+| Price snapshot polling | Not needed for whale copy trading; add back if a future phase requires current prices |
 
 ## Traceability
 
@@ -102,11 +101,9 @@
 | INFRA-02 | Phase 1 | Complete |
 | INFRA-03 | Phase 1 | Complete |
 | INFRA-04 | Phase 2 | Pending |
-| INFRA-05 | Phase 2 | Pending |
 | INFRA-06 | Phase 2 | Pending |
 | INFRA-07 | Phase 2 | Pending |
 | CLIENT-01 | Phase 1 | Complete |
-| CLIENT-02 | Phase 2 | Pending |
 | CLIENT-03 | Phase 1 | Complete |
 | CLIENT-04 | Phase 3 | Pending |
 | FILTER-01 | Phase 2 | Pending |
@@ -131,7 +128,7 @@
 | NOTIFY-03 | Phase 5 | Pending |
 
 **Coverage:**
-- v1 requirements: 31 total
+- v1 requirements: 29 total
 - Mapped to phases: 28
 - Unmapped: 0
 

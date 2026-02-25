@@ -13,7 +13,7 @@ Arbiter goes from a bare Polymarket API client to a live whale copy-trading aler
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation** - Config system, DB schema + migrations, Gamma API reliability
-- [ ] **Phase 2: Data Collection** - Schema migration (drop signals, add trades/wallets/positions), CLOB client, market discovery loop, price polling loop
+- [ ] **Phase 2: Data Collection** - Schema migration (drop signals/price_snapshots, add trades/wallets/positions), market discovery loop with configurable filters
 - [ ] **Phase 3: Trade History** - Ingest historical CLOB trades per market, build wallet activity database
 - [ ] **Phase 4: Whale Identification** - Score wallets by win rate + volume, maintain configurable whale list
 - [ ] **Phase 5: Whale Monitoring + Alerts** - Poll whale positions, Discord alert on new opens
@@ -38,15 +38,14 @@ Plans:
 - [ ] 01-04-PLAN.md — Entry point rewrite (argparse, --check flag, startup health checks, logging)
 
 ### Phase 2: Data Collection
-**Goal**: Schema is migrated to the whale-tracking model, and two concurrent async loops run continuously — discovery upserts filtered Polymarket market metadata every 5 minutes, polling fetches CLOB prices every 1 minute — both surviving transient failures without crashing.
+**Goal**: Schema is migrated to the whale-tracking model, and a continuous market discovery loop upserts filtered Polymarket market metadata every 5 minutes, surviving transient failures without crashing.
 **Depends on**: Phase 1
-**Requirements**: INFRA-04, INFRA-05, INFRA-06, INFRA-07, CLIENT-02, FILTER-01, FILTER-02, FILTER-03
+**Requirements**: INFRA-04, INFRA-06, INFRA-07, FILTER-01, FILTER-02, FILTER-03
 **Success Criteria** (what must be TRUE):
-  1. `alembic upgrade head` drops the `signals` table and creates `trades`, `wallets`, and `positions` tables cleanly
+  1. `alembic upgrade head` drops the `signals` and `price_snapshots` tables and creates `trades`, `wallets`, and `positions` tables cleanly
   2. After starting the service, the markets table is populated with active binary Polymarket markets above configured volume/liquidity thresholds within 5 minutes
-  3. After each polling tick, fresh CLOB bid/ask prices are stored in price_snapshots for all tracked markets
-  4. When the Polymarket API returns an error during a polling tick, the loop logs the error and continues on the next tick — it does not exit
-  5. Each discovery and polling cycle emits a heartbeat log line, so silence in logs is detectable
+  3. When the Polymarket API returns an error during a discovery cycle, the loop logs the error and continues on the next tick — it does not exit
+  4. Each discovery cycle emits a heartbeat log line, so silence in logs is detectable
 **Plans**: TBD
 
 ### Phase 3: Trade History

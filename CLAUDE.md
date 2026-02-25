@@ -11,7 +11,6 @@ Arbiter monitors Polymarket in real time, identifies high-performing large trade
 Single Python process, asyncio-based. Three concurrent concerns:
 
 - **Market discovery** (~every 5 min): fetch active Polymarket markets matching configured filters (binary, min volume, min liquidity), upsert to DB
-- **Price polling** (~every 1 min): fetch best bid/ask for all tracked markets, store snapshots
 - **Trade ingestion** (periodic): fetch trade history from Polymarket CLOB by market, store wallet activity, drive whale scoring
 
 Whale scoring runs after ingestion — ranks wallets by win rate + volume, updates the whale list. Whale monitoring polls top-ranked wallets for new position opens and fires Discord alerts.
@@ -22,14 +21,13 @@ Whale scoring runs after ingestion — ranks wallets by win rate + volume, updat
 
 ### 1. API Client (`arbiter/clients/`)
 - `polymarket.py` — async httpx wrapper around the Polymarket Gamma + CLOB REST APIs
-- Exposes: `list_markets()`, `get_prices(market_ids)`, `get_trades(market_id, since)`
+- Exposes: `list_markets()`, `get_trades(market_id, since)`
 
 ### 2. Storage (`arbiter/db/`)
 PostgreSQL.
 
 Tables:
 - `markets` — id, external_id, title, description, expiry, volume, liquidity, active
-- `price_snapshots` — id, market_id, yes_bid, yes_ask, timestamp (pruned to rolling 24h)
 - `trades` — id, wallet_address, market_id, side, size, price, timestamp
 - `wallets` — id, address, win_rate, total_volume, total_trades, score, last_scored_at, is_tracked
 - `positions` — id, wallet_address, market_id, current_size, avg_price, opened_at
