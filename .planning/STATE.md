@@ -4,8 +4,8 @@
 
 See: .planning/PROJECT.md (updated 2026-02-22)
 
-**Core value:** Surface profitable trading signals on Polymarket with enough accuracy to be worth acting on.
-**Current focus:** Phase 1 - Foundation
+**Core value:** Alert when high-performing Polymarket traders open new positions, enabling copy trading decisions.
+**Current focus:** Phase 1 - Foundation (plan 04 remaining), then Phase 2
 
 ## Current Position
 
@@ -42,10 +42,15 @@ Progress: [███░░░░░░░] 30%
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
-- [Roadmap]: Schema design before detectors — dedup partial index, resolution enum, and price_at_signal must exist in migration 001 before any signal code is written
-- [Roadmap]: Longshot bias may not produce edge on Polymarket (SSRN 2025); resolution tracking is the validation mechanism, not an optional reporting add-on
+- [2026-02-25 Pivot]: Project pivoted from signal detection (longshot bias, time decay) to whale copy trading — monitor high-performing wallets on Polymarket and alert on new position opens
+- [2026-02-25 Pivot]: Kalshi integration deferred indefinitely (no trading access); Polymarket-only for all phases
+- [2026-02-25 Pivot]: Event-driven positioning deferred to much later; copy trading is the primary strategy
+- [2026-02-25 Pivot]: Alert-driven architecture (no execution in v1), but designed so a TradeExecutor slots in without restructuring
+- [2026-02-25 Pivot]: Whale scoring = win rate (correct/total resolved) + volume; configurable thresholds for classification
+- [2026-02-25 Pivot]: Market filters (binary-only, min volume, min liquidity) are user-configurable via env vars
+- [2026-02-25 Pivot]: signals table (created in Phase 1) will be dropped in Phase 2 migration; trades/wallets/positions tables added
 - [Roadmap]: No APScheduler — asyncio.sleep loops are the existing pattern and sufficient
-- [Roadmap]: No pgvector, sentence-transformers, or Anthropic SDK in this milestone — Kalshi matching deferred
+- [Roadmap]: No pgvector, sentence-transformers, or Anthropic SDK — no LLM needed for whale scoring
 - [01-01]: Use Field(description=...) not docstrings — pydantic only surfaces descriptions from Field(), not inline docstrings
 - [01-01]: sqlalchemy/asyncpg/alembic/tenacity were already in pyproject.toml with asyncio extras — only python-dotenv was added
 - [01-02]: greenlet added as explicit dep — required by SQLAlchemy asyncio on Python 3.14 (not bundled)
@@ -62,7 +67,8 @@ None yet.
 ### Blockers/Concerns
 
 - [Phase 2]: CLOB API auth scope — confirm existing API key covers price polling before Phase 2 begins
-- [Phase 3]: Signal threshold calibration (75-95% longshot, 72h/80-97% time decay) are starting hypotheses, not validated parameters; plan to adjust after 30+ resolutions
+- [Phase 2]: signals table was created in Phase 1 migration 001; Phase 2 must include a migration to drop it and add trades/wallets/positions
+- [Phase 3]: Polymarket CLOB trade history API — verify endpoint, pagination, and rate limits before Phase 3 planning
 - [01-02]: PostgreSQL not installed locally — alembic upgrade head cannot run until DB is provisioned; run docker compose up -d postgres then alembic upgrade head before Phase 2
 
 ## Session Continuity

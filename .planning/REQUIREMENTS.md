@@ -1,93 +1,92 @@
 # Requirements: Arbiter
 
 **Defined:** 2026-02-22
-**Core Value:** Surface profitable trading signals on Polymarket with enough accuracy to be worth acting on.
+**Revised:** 2026-02-25 — pivoted from signal detection to whale copy trading
+**Core Value:** Alert when high-performing Polymarket traders open new positions, enabling copy trading decisions.
 
 ## v1 Requirements
 
 ### Infrastructure
 
-- [x] **INFRA-01**: System loads all configuration (DB URL, API keys, Discord webhook, detection thresholds) from environment variables with validation at startup
+- [x] **INFRA-01**: System loads all configuration from environment variables with validation at startup
 - [x] **INFRA-02**: System fails fast with a clear error message if any required config is missing
-- [x] **INFRA-03**: PostgreSQL database schema is managed with Alembic migrations (tables: markets, signals, price_snapshots)
-- [ ] **INFRA-04**: System runs a continuous market discovery loop (every ~5 minutes) that fetches all active Polymarket markets and stores new ones
-- [ ] **INFRA-05**: System runs a continuous price polling loop (every ~1 minute) that fetches current prices for tracked markets and drives signal detection
+- [x] **INFRA-03**: PostgreSQL database schema is managed with Alembic migrations
+- [ ] **INFRA-04**: System runs a continuous market discovery loop (every ~5 minutes) that fetches active Polymarket markets matching configured filters and upserts them to the DB
+- [ ] **INFRA-05**: System runs a continuous price polling loop (every ~1 minute) that fetches current CLOB prices for tracked markets and stores snapshots
 - [ ] **INFRA-06**: Polling loops recover from transient errors (API failures, DB errors) without crashing the process
 - [ ] **INFRA-07**: Polling loops emit a heartbeat log line each cycle so silence is detectable
 
 ### API Clients
 
-- [x] **CLIENT-01**: Polymarket Gamma API client reliably fetches all active markets with pagination (question, end_date, resolved status, outcome_prices, liquidityCLOB)
-- [ ] **CLIENT-02**: Polymarket CLOB API client fetches current best bid/ask prices and order book liquidity for given market IDs
-- [x] **CLIENT-03**: Both API clients handle rate limits and transient errors with retry logic
+- [x] **CLIENT-01**: Polymarket Gamma API client reliably fetches all active markets with pagination
+- [ ] **CLIENT-02**: Polymarket CLOB API client fetches current best bid/ask prices for given market condition IDs
+- [x] **CLIENT-03**: API clients handle rate limits and transient errors with retry logic
+- [ ] **CLIENT-04**: Polymarket CLOB API client fetches trade history for a given market, with a `since` timestamp for incremental fetching
 
-### Signal Detection
+### Market Filters
 
-- [ ] **DETECT-01**: Longshot bias detector fires a signal when a market's yes_price is within a configurable window (default 0.75–0.95), liquidity exceeds a configurable threshold (default 1000 USDC), and no signal has fired for this market+strategy within a configurable cooldown (default 24h)
-- [ ] **DETECT-02**: Time decay detector fires a signal when a market's hours_to_expiry is within a configurable window (default ≤72h), yes_price is within a configurable window (default 0.80–0.97), liquidity exceeds a configurable threshold (default 500 USDC), and no signal has fired for this market+strategy within a configurable cooldown (default 12h)
-- [ ] **DETECT-03**: All detection thresholds (price windows, liquidity minimums, cooldown durations) are configurable via environment variables, not hardcoded
-- [ ] **DETECT-04**: Detectors are structured as independent, synchronous, unit-testable components that receive a market object and return a signal or nothing
+- [ ] **FILTER-01**: Discovery applies a configurable binary-only filter (`MARKET_BINARY_ONLY`, default true) — only yes/no outcome markets are tracked
+- [ ] **FILTER-02**: Discovery applies a configurable minimum volume filter (`MARKET_MIN_VOLUME` in USDC, default 0) — markets below threshold are skipped
+- [ ] **FILTER-03**: Discovery applies a configurable minimum liquidity filter (`MARKET_MIN_LIQUIDITY` in USDC, default 0) — markets below threshold are skipped
 
-### Signal Storage
+### Trade History Ingestion
 
-- [ ] **STORE-01**: Each fired signal is persisted with: market_id, market_question (cached), strategy, signal_direction (yes/no), signal_price, hours_to_expiry, liquidity_at_signal, status, fired_at
-- [ ] **STORE-02**: Signal status follows a full state machine: active → resolved_correct / resolved_incorrect / expired / void
-- [ ] **STORE-03**: Database enforces one open (active) signal per market+strategy combination (partial unique index)
+- [ ] **HIST-01**: Ingestion fetches all trades for each tracked market from the Polymarket CLOB API and stores them with wallet_address, market_id, side, size, price, and timestamp
+- [ ] **HIST-02**: Ingestion is incremental — each market stores a last_ingested_at timestamp, and subsequent runs only fetch trades newer than that timestamp
+- [ ] **HIST-03**: A single market ingestion failure logs the error and continues processing remaining markets — partial failure is non-fatal
 
-### Resolution Tracking
+### Whale Identification
 
-- [ ] **TRACK-01**: Polling loop detects when a tracked market transitions to resolved=True and closed=True
-- [ ] **TRACK-02**: On resolution, system determines the winning side from outcome_prices and records resolution_outcome, resolved_at, and correct (bool) on all active signals for that market
-- [ ] **TRACK-03**: N/A resolutions (void markets) set signal status to void and are excluded from accuracy calculations
-- [ ] **TRACK-04**: Markets that close without resolving (no resolution within reasonable window after end_date) transition active signals to expired
+- [ ] **WHALE-01**: Scoring computes win_rate (correct resolved trades / total resolved trades) and total_volume for each wallet with trade history
+- [ ] **WHALE-02**: Wallets with fewer than `WHALE_MIN_TRADES` resolved trades are excluded from whale classification (configurable, default 10)
+- [ ] **WHALE-03**: Wallets meeting both `WHALE_MIN_WIN_RATE` (configurable, default 0.6) and `WHALE_MIN_VOLUME` (configurable, default 1000 USDC) are flagged `is_tracked = true`
+- [ ] **WHALE-04**: Scoring upserts the wallets table — re-running does not duplicate records
+- [ ] **WHALE-05**: Scoring runs on a configurable periodic interval (`WHALE_SCORE_INTERVAL_SECONDS`)
+
+### Whale Monitoring
+
+- [ ] **MONITOR-01**: System polls current open positions for all `is_tracked = true` wallets on a configurable interval (`WHALE_POLL_INTERVAL_SECONDS`)
+- [ ] **MONITOR-02**: System detects when a whale opens a new position not present in the previous poll (by diffing against stored positions)
+- [ ] **MONITOR-03**: A single wallet position fetch failure logs the error and continues to the next wallet — one failure does not stop the cycle
 
 ### Notifications
 
-- [ ] **NOTIFY-01**: System sends a Discord alert when a new signal fires, containing: market question, strategy name, BUY YES/NO recommendation, price at signal time, hours to expiry, liquidity, and a link to the Polymarket market
-- [ ] **NOTIFY-02**: Duplicate signals are suppressed (one alert per market+strategy per cooldown window)
-
-### Reporting
-
-- [ ] **REPORT-01**: `arbiter report` CLI command displays per-strategy accuracy: total signals, resolved count, correct count, accuracy percentage
-- [ ] **REPORT-02**: Accuracy percentage is suppressed (shows "insufficient data") until at least 10 resolved signals exist for a strategy
-- [ ] **REPORT-03**: Report includes a count of currently active (unresolved) signals per strategy
+- [ ] **NOTIFY-01**: System sends a Discord alert when a tracked whale opens a new position, containing: abbreviated wallet address, market question, side (YES/NO), position size, entry price, and a link to the market
+- [ ] **NOTIFY-02**: Alert deduplication — the same whale+market position does not produce a second Discord alert within a configurable window
+- [ ] **NOTIFY-03**: Discord alerts are sent via webhook — no bot token or OAuth required
 
 ## v2 Requirements
 
-### Enhanced Reporting
+### Trade Execution
 
-- **REPT2-01**: Per-strategy accuracy trend over last N resolved signals (not just all-time)
-- **REPT2-02**: Mean hours_to_expiry at signal time per strategy (shows if time_decay fires too early/late)
-- **REPT2-03**: Confidence intervals on accuracy rates (requires 50+ resolved signals)
+- **EXEC-01**: When a whale alert fires, system can optionally place a copy trade on Polymarket via the order API (requires `EXECUTION_ENABLED=true`)
+- **EXEC-02**: Position sizing is configurable (`COPY_TRADE_USDC_SIZE`) — a fixed USDC amount per trade, not proportional to whale size
+- **EXEC-03**: Execution result (filled, partial, failed) is logged and reported in the Discord alert
+- **EXEC-04**: Execution is gated on a maximum per-trade and per-day spend limit to prevent runaway trading
 
-### Signal Quality
+### Whale Intelligence
 
-- **QUAL-01**: Alert fatigue management — rate-limit Discord messages if many signals fire in one polling cycle
-- **QUAL-02**: Strategy parameter auto-tuning suggestions based on accuracy data
-
-### Additional Strategies
-
-- **STRAT-01**: Whale copy trading — detect and alert when high-ROI Polymarket traders enter new positions
-- **STRAT-02**: Calibration arbitrage — compare Polymarket prices against Metaculus/Good Judgment forecasts and alert on large disagreements
+- **INTEL-01**: Category-scoped whale identification — track whales who specialize in a specific market category (politics, sports, crypto)
+- **INTEL-02**: ROI-weighted scoring — weight win rate by average return per trade, not just correct/incorrect
+- **INTEL-03**: Recency weighting — more recent trades count more in the score than older ones
 
 ### Infrastructure
 
 - **INFRA-V2-01**: Structured JSON logging for production observability
 - **INFRA-V2-02**: Docker/containerization for consistent deployment
 
-## Out of Scope
+## Out of Scope (v1)
 
 | Feature | Reason |
 |---------|--------|
-| Trade execution | Validate edge before automating money. Signals-only for now. |
-| Kalshi integration | Polymarket-only for v1; Kalshi deferred. Arb execution requires dual-funded accounts and latency we can't achieve with REST polling. |
-| Historical backtesting | No official Polymarket bulk history API. Live tracking starting from now is the validation method. |
-| LLM-based signal evaluation | Expensive per-signal; strategies are deterministic threshold checks that don't need LLM confirmation |
+| Trade execution | Validate alert quality before automating money |
+| Kalshi integration | No trading access; deferred until available |
+| Event-driven positioning | Higher complexity; much later phase |
+| Probability trading / mispriced markets | Requires reliable calibration data; deferred |
+| Historical backtesting | No official Polymarket bulk history API |
+| LLM-based market analysis | Expensive; deterministic scoring is sufficient for v1 |
 | Kelly criterion / position sizing | No execution = no positions to size |
-| Continuous re-alerting on active signals | Creates noise; trains user to ignore alerts |
-| Multi-market portfolio view | No execution = no portfolio |
-| Resolution criteria edge trading | Interesting long-term; too complex for v1 |
-| Chatbot / agent interface | Far future |
+| Portfolio view | No execution = no portfolio |
 
 ## Traceability
 
@@ -103,28 +102,30 @@
 | CLIENT-01 | Phase 1 | Complete |
 | CLIENT-02 | Phase 2 | Pending |
 | CLIENT-03 | Phase 1 | Complete |
-| DETECT-01 | Phase 3 | Pending |
-| DETECT-02 | Phase 3 | Pending |
-| DETECT-03 | Phase 3 | Pending |
-| DETECT-04 | Phase 3 | Pending |
-| STORE-01 | Phase 3 | Pending |
-| STORE-02 | Phase 3 | Pending |
-| STORE-03 | Phase 3 | Pending |
-| TRACK-01 | Phase 4 | Pending |
-| TRACK-02 | Phase 4 | Pending |
-| TRACK-03 | Phase 4 | Pending |
-| TRACK-04 | Phase 4 | Pending |
-| NOTIFY-01 | Phase 4 | Pending |
-| NOTIFY-02 | Phase 4 | Pending |
-| REPORT-01 | Phase 5 | Pending |
-| REPORT-02 | Phase 5 | Pending |
-| REPORT-03 | Phase 5 | Pending |
+| CLIENT-04 | Phase 3 | Pending |
+| FILTER-01 | Phase 2 | Pending |
+| FILTER-02 | Phase 2 | Pending |
+| FILTER-03 | Phase 2 | Pending |
+| HIST-01 | Phase 3 | Pending |
+| HIST-02 | Phase 3 | Pending |
+| HIST-03 | Phase 3 | Pending |
+| WHALE-01 | Phase 4 | Pending |
+| WHALE-02 | Phase 4 | Pending |
+| WHALE-03 | Phase 4 | Pending |
+| WHALE-04 | Phase 4 | Pending |
+| WHALE-05 | Phase 4 | Pending |
+| MONITOR-01 | Phase 5 | Pending |
+| MONITOR-02 | Phase 5 | Pending |
+| MONITOR-03 | Phase 5 | Pending |
+| NOTIFY-01 | Phase 5 | Pending |
+| NOTIFY-02 | Phase 5 | Pending |
+| NOTIFY-03 | Phase 5 | Pending |
 
 **Coverage:**
-- v1 requirements: 26 total
-- Mapped to phases: 26
+- v1 requirements: 28 total
+- Mapped to phases: 28
 - Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-22*
-*Last updated: 2026-02-22 after roadmap creation*
+*Last updated: 2026-02-25 — pivoted to whale copy trading*
