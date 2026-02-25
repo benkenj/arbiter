@@ -43,6 +43,12 @@
 - [ ] **WHALE-04**: Scoring upserts the wallets table — re-running does not duplicate records
 - [ ] **WHALE-05**: Scoring runs on a configurable periodic interval (`WHALE_SCORE_INTERVAL_SECONDS`)
 
+### CLI
+
+- [ ] **CLI-01**: `arbiter whales` command displays the current tracked whale list: wallet address (abbreviated), win rate, total volume, total trades, score — sorted by score descending
+- [ ] **CLI-02**: `arbiter whales --all` includes non-tracked wallets (below threshold) so the user can inspect borderline cases and tune thresholds
+- [ ] **CLI-03**: `arbiter whales <address>` shows full detail for a single wallet: all stats plus recent trade history summary
+
 ### Whale Monitoring
 
 - [ ] **MONITOR-01**: System polls current open positions for all `is_tracked = true` wallets on a configurable interval (`WHALE_POLL_INTERVAL_SECONDS`)
@@ -114,6 +120,9 @@
 | WHALE-03 | Phase 4 | Pending |
 | WHALE-04 | Phase 4 | Pending |
 | WHALE-05 | Phase 4 | Pending |
+| CLI-01 | Phase 4 | Pending |
+| CLI-02 | Phase 4 | Pending |
+| CLI-03 | Phase 4 | Pending |
 | MONITOR-01 | Phase 5 | Pending |
 | MONITOR-02 | Phase 5 | Pending |
 | MONITOR-03 | Phase 5 | Pending |
@@ -122,7 +131,7 @@
 | NOTIFY-03 | Phase 5 | Pending |
 
 **Coverage:**
-- v1 requirements: 28 total
+- v1 requirements: 31 total
 - Mapped to phases: 28
 - Unmapped: 0
 

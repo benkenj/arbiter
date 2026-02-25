@@ -63,13 +63,16 @@ Plans:
 ### Phase 4: Whale Identification
 **Goal**: A scoring job runs periodically, ranks all wallets in the trades table by a composite score of win rate and volume, and maintains a `wallets` table with configurable thresholds determining which wallets are classified as tracked whales.
 **Depends on**: Phase 3
-**Requirements**: WHALE-01, WHALE-02, WHALE-03, WHALE-04, WHALE-05
+**Requirements**: WHALE-01, WHALE-02, WHALE-03, WHALE-04, WHALE-05, CLI-01, CLI-02, CLI-03
 **Success Criteria** (what must be TRUE):
   1. After scoring runs, the wallets table contains win_rate, total_volume, total_trades, and score for every wallet with recorded trades
   2. Wallets with fewer than `WHALE_MIN_TRADES` resolved trades are excluded from classification (small sample bias)
   3. Wallets meeting both `WHALE_MIN_WIN_RATE` and `WHALE_MIN_VOLUME` thresholds have `is_tracked = true`
   4. All thresholds (`WHALE_MIN_TRADES`, `WHALE_MIN_WIN_RATE`, `WHALE_MIN_VOLUME`) are configurable via environment variables
   5. Scoring can be re-run without duplicating records — it upserts, not inserts
+  6. `arbiter whales` prints tracked whales sorted by score with win rate, volume, and trade count
+  7. `arbiter whales --all` includes below-threshold wallets for threshold tuning
+  8. `arbiter whales <address>` shows full stats for a single wallet
 **Plans**: TBD
 
 ### Phase 5: Whale Monitoring + Alerts
