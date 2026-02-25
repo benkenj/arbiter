@@ -16,7 +16,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 2: Data Collection** - Schema migration (drop signals/price_snapshots, add trades/wallets/positions), market discovery loop with configurable filters
 - [ ] **Phase 3: Trade History** - Ingest historical CLOB trades per market, build wallet activity database
 - [ ] **Phase 4: Whale Identification** - Score wallets by win rate + volume, maintain configurable whale list
-- [ ] **Phase 5: Whale Monitoring + Alerts** - Poll whale positions, Discord alert on new opens
+- [ ] **Phase 5: Price Impact Analysis** - For each ingested trade, capture market price at +1min, +5min, +30min, +1hr to measure how trades move markets
+- [ ] **Phase 6: Whale Monitoring + Alerts** - Poll whale positions, Discord alert on new opens
 
 ## Phase Details
 
@@ -74,7 +75,18 @@ Plans:
   8. `arbiter whales <address>` shows full stats for a single wallet
 **Plans**: TBD
 
-### Phase 5: Whale Monitoring + Alerts
+### Phase 5: Price Impact Analysis
+**Goal**: For every trade ingested in Phase 3, the system captures the market price at four intervals after execution (+1min, +5min, +30min, +1hr), enabling analysis of how individual trades move markets and which wallets consistently enter before price moves.
+**Depends on**: Phase 3
+**Requirements**: IMPACT-01, IMPACT-02, IMPACT-03, IMPACT-04
+**Success Criteria** (what must be TRUE):
+  1. For each trade in the trades table, price impact records exist (or are marked unavailable) for all four intervals: +1min, +5min, +30min, +1hr
+  2. `arbiter whales <address>` shows price movement data alongside trade history — how often did the market move in their direction at each interval
+  3. Trades where historical price data is unavailable are marked as such rather than silently skipped
+  4. Price impact processing runs as a background job that catches up on unprocessed trades without reprocessing already-captured intervals
+**Plans**: TBD
+
+### Phase 6: Whale Monitoring + Alerts
 **Goal**: The system polls current open positions for all tracked whale wallets at a configurable interval, detects when a whale opens a new position not seen in the previous poll, and fires a Discord alert containing wallet, market, side, size, and entry price.
 **Depends on**: Phase 4
 **Requirements**: MONITOR-01, MONITOR-02, MONITOR-03, NOTIFY-01, NOTIFY-02, NOTIFY-03
@@ -97,4 +109,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 2. Data Collection | 0/TBD | Not started | - |
 | 3. Trade History | 0/TBD | Not started | - |
 | 4. Whale Identification | 0/TBD | Not started | - |
-| 5. Whale Monitoring + Alerts | 0/TBD | Not started | - |
+| 5. Price Impact Analysis | 0/TBD | Not started | - |
+| 6. Whale Monitoring + Alerts | 0/TBD | Not started | - |

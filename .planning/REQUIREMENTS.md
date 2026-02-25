@@ -47,6 +47,13 @@
 - [ ] **CLI-02**: `arbiter whales --all` includes non-tracked wallets (below threshold) so the user can inspect borderline cases and tune thresholds
 - [ ] **CLI-03**: `arbiter whales <address>` shows full detail for a single wallet: all stats plus recent trade history summary
 
+### Price Impact Analysis
+
+- [ ] **IMPACT-01**: For each trade record, the system fetches and stores the market price at four intervals after the trade timestamp: +1min, +5min, +30min, +1hr
+- [ ] **IMPACT-02**: Price impact records are stored in a `trade_price_impacts` table: trade_id, interval_minutes, price, captured_at, available (bool)
+- [ ] **IMPACT-03**: Trades where historical price data is unavailable (API gap, market closed) are marked `available=false` rather than left unprocessed
+- [ ] **IMPACT-04**: Price impact processing is idempotent — re-running does not create duplicate records for already-captured intervals
+
 ### Whale Monitoring
 
 - [ ] **MONITOR-01**: System polls current open positions for all `is_tracked = true` wallets on a configurable interval (`WHALE_POLL_INTERVAL_SECONDS`)
@@ -120,15 +127,19 @@
 | CLI-01 | Phase 4 | Pending |
 | CLI-02 | Phase 4 | Pending |
 | CLI-03 | Phase 4 | Pending |
-| MONITOR-01 | Phase 5 | Pending |
-| MONITOR-02 | Phase 5 | Pending |
-| MONITOR-03 | Phase 5 | Pending |
-| NOTIFY-01 | Phase 5 | Pending |
-| NOTIFY-02 | Phase 5 | Pending |
-| NOTIFY-03 | Phase 5 | Pending |
+| IMPACT-01 | Phase 5 | Pending |
+| IMPACT-02 | Phase 5 | Pending |
+| IMPACT-03 | Phase 5 | Pending |
+| IMPACT-04 | Phase 5 | Pending |
+| MONITOR-01 | Phase 6 | Pending |
+| MONITOR-02 | Phase 6 | Pending |
+| MONITOR-03 | Phase 6 | Pending |
+| NOTIFY-01 | Phase 6 | Pending |
+| NOTIFY-02 | Phase 6 | Pending |
+| NOTIFY-03 | Phase 6 | Pending |
 
 **Coverage:**
-- v1 requirements: 29 total
+- v1 requirements: 33 total
 - Mapped to phases: 28
 - Unmapped: 0
 
