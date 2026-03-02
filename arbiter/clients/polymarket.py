@@ -4,10 +4,11 @@ from datetime import datetime
 from typing import Optional
 
 import httpx
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, Field
 from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
 
 GAMMA_BASE_URL = "https://gamma-api.polymarket.com"
+DATA_API_BASE_URL = "https://data-api.polymarket.com"
 
 logger = logging.getLogger(__name__)
 
@@ -65,10 +66,28 @@ class Market(BaseModel):
         return None
 
 
+class Trade(BaseModel):
+    proxy_wallet: str = Field(alias="proxyWallet")
+    side: str                       # "BUY" | "SELL"
+    size: float
+    price: float
+    timestamp: int                  # Unix seconds (integer)
+    condition_id: str = Field(alias="conditionId")
+    outcome: Optional[str] = None   # "Yes" | "No" — which outcome token was traded
+
+    model_config = ConfigDict(populate_by_name=True)
+
+
 class PolymarketClient:
     def __init__(self):
         self._client = httpx.AsyncClient(
             base_url=GAMMA_BASE_URL,
+            timeout=30.0,
+            headers={"Accept": "application/json"},
+            limits=httpx.Limits(max_keepalive_connections=5, max_connections=10),
+        )
+        self._data_client = httpx.AsyncClient(
+            base_url=DATA_API_BASE_URL,
             timeout=30.0,
             headers={"Accept": "application/json"},
             limits=httpx.Limits(max_keepalive_connections=5, max_connections=10),
@@ -141,8 +160,64 @@ class PolymarketClient:
         item = response.json()
         return self._parse_market(item)
 
+    @retry(
+        retry=retry_if_exception_type(
+            (httpx.HTTPStatusError, httpx.NetworkError, httpx.TimeoutException)
+        ),
+        stop=stop_after_attempt(4),
+        wait=wait_exponential(multiplier=1, min=2, max=30),
+        reraise=True,
+    )
+    async def _fetch_clob_page(
+        self, condition_id: str, offset: int, limit: int
+    ) -> list[Trade]:
+        params = {
+            "market": condition_id,
+            "takerOnly": "false",   # MUST be false — get all trades, not just taker-side
+            "limit": limit,
+            "offset": offset,
+        }
+        response = await self._data_client.get("/trades", params=params)
+        response.raise_for_status()
+        return [Trade.model_validate(item) for item in response.json()]
+
+    async def get_trades_for_market(
+        self,
+        condition_id: str,
+        since: Optional[datetime] = None,
+        page_size: int = 500,
+    ) -> list[Trade]:
+        """
+        Fetch trades for a market, returning only those newer than `since`.
+        API returns newest-first; stops paging when a page is fully older than watermark.
+        Returns all trades if since is None (initial backfill).
+        """
+        all_trades: list[Trade] = []
+        offset = 0
+        since_ts: Optional[int] = int(since.timestamp()) if since else None
+
+        while True:
+            page = await self._fetch_clob_page(condition_id, offset, page_size)
+            if not page:
+                break
+
+            if since_ts is not None:
+                new_trades = [t for t in page if t.timestamp > since_ts]
+                all_trades.extend(new_trades)
+                if len(new_trades) < len(page):
+                    break
+            else:
+                all_trades.extend(page)
+
+            if len(page) < page_size:
+                break
+            offset += page_size
+
+        return all_trades
+
     async def close(self):
         await self._client.aclose()
+        await self._data_client.aclose()
 
     async def __aenter__(self):
         return self
