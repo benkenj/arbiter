@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: in_progress
-last_updated: "2026-03-02T06:35:00Z"
+last_updated: "2026-03-02T06:38:22Z"
 progress:
   total_phases: 6
   completed_phases: 2
   total_plans: 9
-  completed_plans: 8
+  completed_plans: 9
 ---
 
 # Project State
@@ -18,16 +18,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-22)
 
 **Core value:** Alert when high-performing Polymarket traders open new positions, enabling copy trading decisions.
-**Current focus:** Phase 3 - Trade History (plan 2 of 3 complete)
+**Current focus:** Phase 3 - Trade History (plan 3 of 3 complete — phase complete)
 
 ## Current Position
 
 Phase: 3 of 6 (Trade History)
-Plan: 2 of 3 in current phase
+Plan: 3 of 3 in current phase (phase complete)
 Status: In Progress
-Last activity: 2026-03-02 — Completed 03-02-PLAN.md: outcome column added to trades table via Alembic migration 003
+Last activity: 2026-03-02 — Completed 03-03-PLAN.md: trade ingestion loop with watermark, failure isolation, wired into main.py
 
-Progress: [██████░░░░] 60%
+Progress: [███████░░░] 70%
 
 ## Performance Metrics
 
@@ -42,7 +42,7 @@ Progress: [██████░░░░] 60%
 |-------|-------|-------|----------|
 | Phase 01 | 3 of 4 | ~10 min | ~5 min |
 | Phase 02 | 2 of 2 | ~6 min | ~3 min |
-| Phase 03 | 2 of 3 | ~6 min | ~3 min |
+| Phase 03 | 3 of 3 | ~8 min | ~3 min |
 
 **Recent Trend:**
 - Last 5 plans: 02-01 (3 min), 02-02 (3 min), 03-01 (4 min), 03-02 (2 min)
@@ -84,6 +84,9 @@ Recent decisions affecting current work:
 - [03-01]: Pagination stop when len(new_trades) < len(page) — page crossed watermark boundary, no need to continue
 - [03-02]: outcome column is nullable (VARCHAR(10) NULL) — trades ingested before this migration have no outcome value; Phase 4 scoring treats NULL as unresolved
 - [03-02]: Migration revision ID a3f8b2c91d45 is fixed (not randomly generated) — deterministic history per project convention
+- [03-03]: Append-only sa_insert(Trade) — no ON CONFLICT; watermark in get_trades_for_market() ensures only new trades are returned
+- [03-03]: Session-per-market re-fetch — Market row re-fetched via session.get() inside each fresh session to avoid DetachedInstanceError on last_ingested_at update
+- [03-03]: ingestion_batch_size cap applied as slice before the loop — simple rate-limit guard for Data API requests per cycle
 
 ### Pending Todos
 
@@ -99,5 +102,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-02
-Stopped at: Completed 03-02-PLAN.md — outcome column added to trades table via Alembic migration 003
+Stopped at: Completed 03-03-PLAN.md — trade ingestion loop with watermark, failure isolation, wired into main.py
 Resume file: None

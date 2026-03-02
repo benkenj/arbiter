@@ -30,8 +30,8 @@
 ### Trade History Ingestion
 
 - [x] **HIST-01**: Ingestion fetches all trades for each tracked market from the Polymarket CLOB API and stores them with wallet_address, market_id, side, size, price, and timestamp
-- [ ] **HIST-02**: Ingestion is incremental — each market stores a last_ingested_at timestamp, and subsequent runs only fetch trades newer than that timestamp
-- [ ] **HIST-03**: A single market ingestion failure logs the error and continues processing remaining markets — partial failure is non-fatal
+- [x] **HIST-02**: Ingestion is incremental — each market stores a last_ingested_at timestamp, and subsequent runs only fetch trades newer than that timestamp
+- [x] **HIST-03**: A single market ingestion failure logs the error and continues processing remaining markets — partial failure is non-fatal
 
 ### Whale Identification
 
@@ -117,8 +117,8 @@
 | FILTER-02 | Phase 2 | Complete |
 | FILTER-03 | Phase 2 | Complete |
 | HIST-01 | Phase 3 | Complete |
-| HIST-02 | Phase 3 | Pending |
-| HIST-03 | Phase 3 | Pending |
+| HIST-02 | Phase 3 | Complete |
+| HIST-03 | Phase 3 | Complete |
 | WHALE-01 | Phase 4 | Pending |
 | WHALE-02 | Phase 4 | Pending |
 | WHALE-03 | Phase 4 | Pending |

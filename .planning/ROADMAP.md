@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation** - Config system, DB schema + migrations, Gamma API reliability
 - [x] **Phase 2: Data Collection** - Schema migration (drop signals/price_snapshots, add trades/wallets/positions), market discovery loop with configurable filters (completed 2026-03-02)
-- [ ] **Phase 3: Trade History** - Ingest historical CLOB trades per market, build wallet activity database
+- [x] **Phase 3: Trade History** - Ingest historical CLOB trades per market, build wallet activity database (completed 2026-03-02)
 - [ ] **Phase 4: Whale Identification** - Score wallets by win rate + volume, maintain configurable whale list
 - [ ] **Phase 5: Price Impact Analysis** - For each ingested trade, capture market price at +1min, +5min, +30min, +1hr to measure how trades move markets
 - [ ] **Phase 6: Whale Monitoring + Alerts** - Poll whale positions, Discord alert on new opens
@@ -116,7 +116,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 |-------|----------------|--------|-----------|
 | 1. Foundation | 3/4 | In Progress | - |
 | 2. Data Collection | 2/2 | Complete   | 2026-03-02 |
-| 3. Trade History | 2/3 | In Progress|  |
+| 3. Trade History | 3/3 | Complete   | 2026-03-02 |
 | 4. Whale Identification | 0/TBD | Not started | - |
 | 5. Price Impact Analysis | 0/TBD | Not started | - |
 | 6. Whale Monitoring + Alerts | 0/TBD | Not started | - |
