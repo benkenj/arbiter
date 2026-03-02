@@ -36,42 +36,24 @@ class Settings(BaseSettings):
         description="Log level: DEBUG, INFO, WARNING, ERROR",
     )
 
-    # === Detection Thresholds (Phase 3) ===
-    longshot_price_min: float = Field(
-        default=0.75,
-        description="Minimum yes-price for longshot bias signal",
+    # === Market Discovery Filters ===
+    market_binary_only: bool = Field(
+        default=True,
+        description="Only track binary (Yes/No) markets. Default: true.",
     )
-    longshot_price_max: float = Field(
-        default=0.95,
-        description="Maximum yes-price for longshot bias signal",
-    )
-    longshot_liquidity_min: float = Field(
+    market_min_volume: float = Field(
         default=1000.0,
-        description="Minimum liquidity (USD) for longshot bias signal",
+        description="Minimum trading volume in USDC to track a market. Default: 1000.",
     )
-    longshot_cooldown_hours: float = Field(
-        default=24.0,
-        description="Hours to wait before re-firing a longshot signal for the same market",
+    market_min_liquidity: float = Field(
+        default=1000.0,
+        description="Minimum open-interest liquidity in USDC to track a market. Default: 1000.",
     )
-    time_decay_price_min: float = Field(
-        default=0.80,
-        description="Minimum yes-price for time-decay signal",
-    )
-    time_decay_price_max: float = Field(
-        default=0.97,
-        description="Maximum yes-price for time-decay signal",
-    )
-    time_decay_liquidity_min: float = Field(
-        default=500.0,
-        description="Minimum liquidity (USD) for time-decay signal",
-    )
-    time_decay_hours_to_expiry_max: float = Field(
-        default=72.0,
-        description="Maximum hours to expiry for time-decay signal",
-    )
-    time_decay_cooldown_hours: float = Field(
-        default=12.0,
-        description="Hours to wait before re-firing a time-decay signal for the same market",
+
+    # === Discovery Loop ===
+    discovery_interval_seconds: int = Field(
+        default=300,
+        description="Seconds between market discovery cycles. Default: 300 (5 minutes).",
     )
 
     @field_validator("database_url")
@@ -114,16 +96,11 @@ def print_config_summary(settings: Settings) -> None:
     logger.info("  DATABASE_URL: %s", masked_url)
     logger.info("  DB_TIMEOUT_SECONDS: %s", settings.db_timeout_seconds)
 
-    logger.info("=== Detection Thresholds ===")
-    logger.info("  LONGSHOT_PRICE_MIN: %s", settings.longshot_price_min)
-    logger.info("  LONGSHOT_PRICE_MAX: %s", settings.longshot_price_max)
-    logger.info("  LONGSHOT_LIQUIDITY_MIN: %s", settings.longshot_liquidity_min)
-    logger.info("  LONGSHOT_COOLDOWN_HOURS: %s", settings.longshot_cooldown_hours)
-    logger.info("  TIME_DECAY_PRICE_MIN: %s", settings.time_decay_price_min)
-    logger.info("  TIME_DECAY_PRICE_MAX: %s", settings.time_decay_price_max)
-    logger.info("  TIME_DECAY_LIQUIDITY_MIN: %s", settings.time_decay_liquidity_min)
-    logger.info("  TIME_DECAY_HOURS_TO_EXPIRY_MAX: %s", settings.time_decay_hours_to_expiry_max)
-    logger.info("  TIME_DECAY_COOLDOWN_HOURS: %s", settings.time_decay_cooldown_hours)
+    logger.info("=== Market Filters ===")
+    logger.info("  MARKET_BINARY_ONLY: %s", settings.market_binary_only)
+    logger.info("  MARKET_MIN_VOLUME: %s", settings.market_min_volume)
+    logger.info("  MARKET_MIN_LIQUIDITY: %s", settings.market_min_liquidity)
+    logger.info("  DISCOVERY_INTERVAL_SECONDS: %s", settings.discovery_interval_seconds)
 
     logger.info("=== Logging ===")
     logger.info("  LOG_LEVEL: %s", settings.log_level)
