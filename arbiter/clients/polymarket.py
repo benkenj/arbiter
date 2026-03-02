@@ -88,7 +88,7 @@ class PolymarketClient:
             clob_token_ids=_parse_json_field(item.get("clobTokenIds"), "clobTokenIds"),
             condition_id=item.get("conditionId"),
             volume=item.get("volume"),
-            liquidity=item.get("liquidityCLOB"),
+            liquidity=item.get("liquidityClob"),
         )
 
     @retry(
