@@ -56,6 +56,20 @@ class Settings(BaseSettings):
         description="Seconds between market discovery cycles. Default: 300 (5 minutes).",
     )
 
+    # === Trade Ingestion ===
+    ingestion_interval_seconds: int = Field(
+        default=300,
+        description="Seconds between trade ingestion cycles. Default: 300 (5 minutes).",
+    )
+    ingestion_page_size: int = Field(
+        default=500,
+        description="Trades per page fetched from Data API per request. Max 500. Default: 500.",
+    )
+    ingestion_batch_size: int = Field(
+        default=100,
+        description="Maximum markets processed per ingestion cycle. Limits Data API request rate. Default: 100.",
+    )
+
     @field_validator("database_url")
     @classmethod
     def validate_asyncpg_dialect(cls, v: str) -> str:
@@ -101,6 +115,11 @@ def print_config_summary(settings: Settings) -> None:
     logger.info("  MARKET_MIN_VOLUME: %s", settings.market_min_volume)
     logger.info("  MARKET_MIN_LIQUIDITY: %s", settings.market_min_liquidity)
     logger.info("  DISCOVERY_INTERVAL_SECONDS: %s", settings.discovery_interval_seconds)
+
+    logger.info("=== Trade Ingestion ===")
+    logger.info("  INGESTION_INTERVAL_SECONDS: %s", settings.ingestion_interval_seconds)
+    logger.info("  INGESTION_PAGE_SIZE: %s", settings.ingestion_page_size)
+    logger.info("  INGESTION_BATCH_SIZE: %s", settings.ingestion_batch_size)
 
     logger.info("=== Logging ===")
     logger.info("  LOG_LEVEL: %s", settings.log_level)
