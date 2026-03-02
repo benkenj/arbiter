@@ -72,27 +72,32 @@ def _to_db_row(market: ClientMarket) -> dict:
     }
 
 
+_UPSERT_BATCH_SIZE = 500  # 500 rows × 13 cols = 6500 params, well under PG's 65535 limit
+
+
 async def upsert_markets(session, market_rows: list[dict]) -> int:
     if not market_rows:
         return 0
-    stmt = insert(Market).values(market_rows)
-    stmt = stmt.on_conflict_do_update(
-        index_elements=["external_id"],
-        set_={
-            "question": stmt.excluded.question,
-            "description": stmt.excluded.description,
-            "end_date": stmt.excluded.end_date,
-            "resolved": stmt.excluded.resolved,
-            "closed": stmt.excluded.closed,
-            "yes_price": stmt.excluded.yes_price,
-            "liquidity": stmt.excluded.liquidity,
-            "volume": stmt.excluded.volume,
-            "active": stmt.excluded.active,
-            "condition_id": stmt.excluded.condition_id,
-            "fetched_at": stmt.excluded.fetched_at,
-        },
-    )
-    await session.execute(stmt)
+    for i in range(0, len(market_rows), _UPSERT_BATCH_SIZE):
+        batch = market_rows[i : i + _UPSERT_BATCH_SIZE]
+        stmt = insert(Market).values(batch)
+        stmt = stmt.on_conflict_do_update(
+            index_elements=["external_id"],
+            set_={
+                "question": stmt.excluded.question,
+                "description": stmt.excluded.description,
+                "end_date": stmt.excluded.end_date,
+                "resolved": stmt.excluded.resolved,
+                "closed": stmt.excluded.closed,
+                "yes_price": stmt.excluded.yes_price,
+                "liquidity": stmt.excluded.liquidity,
+                "volume": stmt.excluded.volume,
+                "active": stmt.excluded.active,
+                "condition_id": stmt.excluded.condition_id,
+                "fetched_at": stmt.excluded.fetched_at,
+            },
+        )
+        await session.execute(stmt)
     await session.commit()
     return len(market_rows)
 
