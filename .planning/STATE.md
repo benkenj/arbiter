@@ -5,32 +5,33 @@
 See: .planning/PROJECT.md (updated 2026-02-22)
 
 **Core value:** Alert when high-performing Polymarket traders open new positions, enabling copy trading decisions.
-**Current focus:** Phase 1 - Foundation (plan 04 remaining), then Phase 2
+**Current focus:** Phase 2 - Data Collection (plan 01 done, plan 02 remaining)
 
 ## Current Position
 
-Phase: 1 of 5 (Foundation)
-Plan: 3 of 4 in current phase
+Phase: 2 of 6 (Data Collection)
+Plan: 1 of 2 in current phase
 Status: In Progress
-Last activity: 2026-02-23 — Completed 01-03-PLAN.md: PolymarketClient hardening (pagination, retry, parse fixes)
+Last activity: 2026-03-01 — Completed 02-01-PLAN.md: whale schema migration 002 + ORM model update
 
-Progress: [███░░░░░░░] 30%
+Progress: [████░░░░░░] 40%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 3
-- Average duration: ~5 min
-- Total execution time: ~10 min
+- Total plans completed: 4
+- Average duration: ~4 min
+- Total execution time: ~13 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | Phase 01 | 3 of 4 | ~10 min | ~5 min |
+| Phase 02 | 1 of 2 | ~3 min | ~3 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (2 min), 01-03 (8 min)
+- Last 5 plans: 01-01 (2 min), 01-03 (8 min), 02-01 (3 min)
 - Trend: On track
 
 *Updated after each plan completion*
@@ -59,6 +60,8 @@ Recent decisions affecting current work:
 - [01-03]: Retry placed on _fetch_page (per-page) not on fetch_all_active_markets — individual page failures retry, accumulated pages kept
 - [01-03]: tenacity added as runtime dependency (not dev) — retry is production behavior required in deployed process
 - [01-03]: list_markets() kept for Phase 1 backward compat, delegates to _fetch_page with active filters; will be removed in Phase 2
+- [Phase 02-01]: Migration 002 revision 1c5960c71bfe: DROP TYPE IF EXISTS signal_status after table drop; condition_id/last_ingested_at/created_at added nullable to markets
+- [Phase 02-01]: Manual Alembic migration authoring (no autogenerate) — consistent with Phase 1 decision, avoids postgresql_where partial index issues
 
 ### Pending Todos
 
@@ -67,12 +70,12 @@ None yet.
 ### Blockers/Concerns
 
 - [Phase 2]: CLOB API auth scope — confirm existing API key covers price polling before Phase 2 begins
-- [Phase 2]: signals table was created in Phase 1 migration 001; Phase 2 must include a migration to drop it and add trades/wallets/positions
+- [Phase 2 - RESOLVED]: signals/price_snapshots dropped and trades/wallets/positions created in migration 002 (02-01-PLAN.md)
 - [Phase 3]: Polymarket CLOB trade history API — verify endpoint, pagination, and rate limits before Phase 3 planning
 - [01-02]: PostgreSQL not installed locally — alembic upgrade head cannot run until DB is provisioned; run docker compose up -d postgres then alembic upgrade head before Phase 2
 
 ## Session Continuity
 
-Last session: 2026-02-23
-Stopped at: Completed 01-03-PLAN.md — PolymarketClient hardening (28,994 markets fetched live)
+Last session: 2026-03-01
+Stopped at: Completed 02-01-PLAN.md — whale schema migration 002 + ORM model update
 Resume file: None

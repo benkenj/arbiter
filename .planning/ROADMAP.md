@@ -50,7 +50,7 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 02-01-PLAN.md — Schema migration 002 (drop Signal/PriceSnapshot, add Trade/Wallet/Position) + ORM model update
+- [x] 02-01-PLAN.md — Schema migration 002 (drop Signal/PriceSnapshot, add Trade/Wallet/Position) + ORM model update
 - [ ] 02-02-PLAN.md — Market filter config fields + discovery loop + main.py wiring
 
 ### Phase 3: Trade History
@@ -110,7 +110,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 3/4 | In Progress | - |
-| 2. Data Collection | 0/2 | Not started | - |
+| 2. Data Collection | 1/2 | In Progress|  |
 | 3. Trade History | 0/TBD | Not started | - |
 | 4. Whale Identification | 0/TBD | Not started | - |
 | 5. Price Impact Analysis | 0/TBD | Not started | - |
