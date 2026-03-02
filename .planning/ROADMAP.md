@@ -62,7 +62,12 @@ Plans:
   2. Re-running ingestion on a market with existing records only fetches trades newer than the last stored timestamp — no duplicates
   3. Markets that have resolved have their trade outcome (correct/incorrect) derivable from stored data — resolution outcome is linkable to the wallet's position
   4. Ingestion failures for a single market log the error and continue processing other markets — one bad market does not block the rest
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 03-01-PLAN.md — CLOB Data API client extension (Trade model, _fetch_clob_page, get_trades_for_market) + ingestion config fields
+- [ ] 03-02-PLAN.md — Alembic migration 003 (add outcome column to trades) + Trade ORM model update
+- [ ] 03-03-PLAN.md — Ingestion module (arbiter/ingestion/trades.py) + main.py wiring
 
 ### Phase 4: Whale Identification
 **Goal**: A scoring job runs periodically, ranks all wallets in the trades table by a composite score of win rate and volume, and maintains a `wallets` table with configurable thresholds determining which wallets are classified as tracked whales.
@@ -111,7 +116,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 |-------|----------------|--------|-----------|
 | 1. Foundation | 3/4 | In Progress | - |
 | 2. Data Collection | 2/2 | Complete   | 2026-03-02 |
-| 3. Trade History | 0/TBD | Not started | - |
+| 3. Trade History | 0/3 | Not started | - |
 | 4. Whale Identification | 0/TBD | Not started | - |
 | 5. Price Impact Analysis | 0/TBD | Not started | - |
 | 6. Whale Monitoring + Alerts | 0/TBD | Not started | - |
