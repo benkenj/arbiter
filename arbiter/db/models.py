@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import Boolean, DateTime, Enum, Float, ForeignKey, Index, Integer, String, Text, text
+from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Index, Integer, String, Text
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
@@ -25,45 +25,48 @@ class Market(Base):
     volume: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     active: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default="true")
     fetched_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    condition_id: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+    last_ingested_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+    created_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
 
 
-class Signal(Base):
-    __tablename__ = "signals"
+class Trade(Base):
+    __tablename__ = "trades"
     __table_args__ = (
-        Index(
-            "ix_signals_market_strategy_active",
-            "market_id",
-            "strategy",
-            unique=True,
-            postgresql_where=text("status = 'active'"),
-        ),
+        Index("ix_trades_wallet", "wallet_address"),
+        Index("ix_trades_market", "market_id"),
     )
 
     id: Mapped[int] = mapped_column(primary_key=True)
+    wallet_address: Mapped[str] = mapped_column(String, nullable=False)
     market_id: Mapped[int] = mapped_column(Integer, ForeignKey("markets.id"), nullable=False)
-    market_question: Mapped[str] = mapped_column(Text, nullable=False)
-    strategy: Mapped[str] = mapped_column(String(50), nullable=False)
-    signal_direction: Mapped[str] = mapped_column(String(10), nullable=False)
-    signal_price: Mapped[float] = mapped_column(Float, nullable=False)
-    hours_to_expiry: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
-    liquidity_at_signal: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
-    status: Mapped[str] = mapped_column(
-        Enum("active", "resolved_correct", "resolved_incorrect", "expired", "void", name="signal_status"),
-        nullable=False,
-        server_default="active",
-    )
-    resolution_outcome: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
-    fired_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
-    resolved_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+    side: Mapped[str] = mapped_column(String(10), nullable=False)
+    size: Mapped[float] = mapped_column(Float, nullable=False)
+    price: Mapped[float] = mapped_column(Float, nullable=False)
+    timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
 
 
-class PriceSnapshot(Base):
-    __tablename__ = "price_snapshots"
-    __table_args__ = (Index("ix_price_snapshots_market_fetched", "market_id", "fetched_at"),)
+class Wallet(Base):
+    __tablename__ = "wallets"
+    __table_args__ = (Index("ix_wallets_is_tracked", "is_tracked"),)
 
     id: Mapped[int] = mapped_column(primary_key=True)
+    address: Mapped[str] = mapped_column(String, nullable=False, unique=True)
+    win_rate: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    total_volume: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    total_trades: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    score: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    last_scored_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+    is_tracked: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default="false")
+
+
+class Position(Base):
+    __tablename__ = "positions"
+    __table_args__ = (Index("ix_positions_wallet", "wallet_address"),)
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    wallet_address: Mapped[str] = mapped_column(String, nullable=False)
     market_id: Mapped[int] = mapped_column(Integer, ForeignKey("markets.id"), nullable=False)
-    yes_bid: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
-    yes_ask: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
-    liquidity: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
-    fetched_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    current_size: Mapped[float] = mapped_column(Float, nullable=False)
+    avg_price: Mapped[float] = mapped_column(Float, nullable=False)
+    opened_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
