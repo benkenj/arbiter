@@ -19,7 +19,7 @@
 
 - [x] **CLIENT-01**: Polymarket Gamma API client reliably fetches all active markets with pagination
 - [x] **CLIENT-03**: API clients handle rate limits and transient errors with retry logic
-- [ ] **CLIENT-04**: Polymarket CLOB API client fetches trade history for a given market, with a `since` timestamp for incremental fetching
+- [x] **CLIENT-04**: Polymarket CLOB API client fetches trade history for a given market, with a `since` timestamp for incremental fetching
 
 ### Market Filters
 
@@ -112,7 +112,7 @@
 | INFRA-07 | Phase 2 | Complete |
 | CLIENT-01 | Phase 1 | Complete |
 | CLIENT-03 | Phase 1 | Complete |
-| CLIENT-04 | Phase 3 | Pending |
+| CLIENT-04 | Phase 3 | Complete |
 | FILTER-01 | Phase 2 | Complete |
 | FILTER-02 | Phase 2 | Complete |
 | FILTER-03 | Phase 2 | Complete |
