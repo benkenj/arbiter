@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: in_progress
-last_updated: "2026-03-02T06:36:00Z"
+last_updated: "2026-03-02T06:35:00Z"
 progress:
   total_phases: 6
   completed_phases: 2
   total_plans: 9
-  completed_plans: 7
+  completed_plans: 8
 ---
 
 # Project State
@@ -18,16 +18,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-22)
 
 **Core value:** Alert when high-performing Polymarket traders open new positions, enabling copy trading decisions.
-**Current focus:** Phase 3 - Trade History (plan 1 of 3 complete)
+**Current focus:** Phase 3 - Trade History (plan 2 of 3 complete)
 
 ## Current Position
 
 Phase: 3 of 6 (Trade History)
-Plan: 1 of 3 in current phase
+Plan: 2 of 3 in current phase
 Status: In Progress
-Last activity: 2026-03-02 — Completed 03-01-PLAN.md: CLOB trade fetch client with Trade model, watermark pagination, and ingestion config fields
+Last activity: 2026-03-02 — Completed 03-02-PLAN.md: outcome column added to trades table via Alembic migration 003
 
-Progress: [█████░░░░░] 55%
+Progress: [██████░░░░] 60%
 
 ## Performance Metrics
 
@@ -42,10 +42,10 @@ Progress: [█████░░░░░] 55%
 |-------|-------|-------|----------|
 | Phase 01 | 3 of 4 | ~10 min | ~5 min |
 | Phase 02 | 2 of 2 | ~6 min | ~3 min |
-| Phase 03 | 1 of 3 | ~4 min | ~4 min |
+| Phase 03 | 2 of 3 | ~6 min | ~3 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-03 (8 min), 02-01 (3 min), 02-02 (3 min), 03-01 (4 min)
+- Last 5 plans: 02-01 (3 min), 02-02 (3 min), 03-01 (4 min), 03-02 (2 min)
 - Trend: On track
 
 *Updated after each plan completion*
@@ -82,6 +82,8 @@ Recent decisions affecting current work:
 - [03-01]: takerOnly=false hardcoded in _fetch_clob_page — default true omits maker-side fills, undercounting wallet activity
 - [03-01]: Watermark compared as int Unix seconds (int(since.timestamp())) — Data API timestamp field is integer, not ISO string
 - [03-01]: Pagination stop when len(new_trades) < len(page) — page crossed watermark boundary, no need to continue
+- [03-02]: outcome column is nullable (VARCHAR(10) NULL) — trades ingested before this migration have no outcome value; Phase 4 scoring treats NULL as unresolved
+- [03-02]: Migration revision ID a3f8b2c91d45 is fixed (not randomly generated) — deterministic history per project convention
 
 ### Pending Todos
 
@@ -97,5 +99,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-02
-Stopped at: Completed 03-01-PLAN.md — CLOB trade fetch client with Trade model, watermark pagination, and ingestion config fields
+Stopped at: Completed 03-02-PLAN.md — outcome column added to trades table via Alembic migration 003
 Resume file: None

@@ -122,6 +122,14 @@ python -m arbiter --check   # health check only
 - `asyncio.gather()` in main.py is ready to accept additional coroutines (trade ingestion, whale scoring, position monitoring) as each phase ships
 - markets table is populated after first cycle, providing the market IDs needed by trade ingestion (Phase 3)
 
+## Self-Check: PASSED
+
+All created files found on disk. All task commits verified in git log:
+- `2dce797` feat(02-02): add market filter + discovery interval fields to config
+- `13bab09` feat(02-02): implement discovery loop with filter, upsert, and heartbeat
+- `1e338d6` feat(02-02): wire discovery loop into main.py
+- `bcc9bac` docs(02-02): complete discovery loop plan
+
 ---
 *Phase: 02-data-collection*
 *Completed: 2026-03-02*
