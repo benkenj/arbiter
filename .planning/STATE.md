@@ -5,33 +5,33 @@
 See: .planning/PROJECT.md (updated 2026-02-22)
 
 **Core value:** Alert when high-performing Polymarket traders open new positions, enabling copy trading decisions.
-**Current focus:** Phase 2 - Data Collection (plan 01 done, plan 02 remaining)
+**Current focus:** Phase 2 - Data Collection (all plans complete)
 
 ## Current Position
 
 Phase: 2 of 6 (Data Collection)
-Plan: 1 of 2 in current phase
-Status: In Progress
-Last activity: 2026-03-01 — Completed 02-01-PLAN.md: whale schema migration 002 + ORM model update
+Plan: 2 of 2 in current phase
+Status: Phase Complete
+Last activity: 2026-03-02 — Completed 02-02-PLAN.md: discovery loop with market filters and heartbeat logging
 
-Progress: [████░░░░░░] 40%
+Progress: [█████░░░░░] 50%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 4
-- Average duration: ~4 min
-- Total execution time: ~13 min
+- Total plans completed: 5
+- Average duration: ~3 min
+- Total execution time: ~16 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | Phase 01 | 3 of 4 | ~10 min | ~5 min |
-| Phase 02 | 1 of 2 | ~3 min | ~3 min |
+| Phase 02 | 2 of 2 | ~6 min | ~3 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (2 min), 01-03 (8 min), 02-01 (3 min)
+- Last 5 plans: 01-01 (2 min), 01-03 (8 min), 02-01 (3 min), 02-02 (3 min)
 - Trend: On track
 
 *Updated after each plan completion*
@@ -62,6 +62,9 @@ Recent decisions affecting current work:
 - [01-03]: list_markets() kept for Phase 1 backward compat, delegates to _fetch_page with active filters; will be removed in Phase 2
 - [Phase 02-01]: Migration 002 revision 1c5960c71bfe: DROP TYPE IF EXISTS signal_status after table drop; condition_id/last_ingested_at/created_at added nullable to markets
 - [Phase 02-01]: Manual Alembic migration authoring (no autogenerate) — consistent with Phase 1 decision, avoids postgresql_where partial index issues
+- [Phase 02]: Poetry venv Python 3.14 (arbiter-iy17SPxa-py3.14) — system python resolves to 3.11 with pydantic v1; all verification uses venv path directly
+- [Phase 02]: created_at excluded from ON CONFLICT SET clause in upsert_markets() — preserves original insert timestamp across discovery cycles
+- [Phase 02]: discovery_loop sleep placed after cycle body — first cycle runs immediately on startup, not after first interval
 
 ### Pending Todos
 
@@ -76,6 +79,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-01
-Stopped at: Completed 02-01-PLAN.md — whale schema migration 002 + ORM model update
+Last session: 2026-03-02
+Stopped at: Completed 02-02-PLAN.md — discovery loop with market filters and heartbeat logging
 Resume file: None

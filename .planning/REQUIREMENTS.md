@@ -12,8 +12,8 @@
 - [x] **INFRA-02**: System fails fast with a clear error message if any required config is missing
 - [x] **INFRA-03**: PostgreSQL database schema is managed with Alembic migrations
 - [x] **INFRA-04**: System runs a continuous market discovery loop (every ~5 minutes) that fetches active Polymarket markets matching configured filters and upserts them to the DB
-- [ ] **INFRA-06**: Discovery loop recovers from transient errors (API failures, DB errors) without crashing the process
-- [ ] **INFRA-07**: Discovery loop emits a heartbeat log line each cycle so silence is detectable
+- [x] **INFRA-06**: Discovery loop recovers from transient errors (API failures, DB errors) without crashing the process
+- [x] **INFRA-07**: Discovery loop emits a heartbeat log line each cycle so silence is detectable
 
 ### API Clients
 
@@ -23,9 +23,9 @@
 
 ### Market Filters
 
-- [ ] **FILTER-01**: Discovery applies a configurable binary-only filter (`MARKET_BINARY_ONLY`, default true) — only yes/no outcome markets are tracked
-- [ ] **FILTER-02**: Discovery applies a configurable minimum volume filter (`MARKET_MIN_VOLUME` in USDC, default 0) — markets below threshold are skipped
-- [ ] **FILTER-03**: Discovery applies a configurable minimum liquidity filter (`MARKET_MIN_LIQUIDITY` in USDC, default 0) — markets below threshold are skipped
+- [x] **FILTER-01**: Discovery applies a configurable binary-only filter (`MARKET_BINARY_ONLY`, default true) — only yes/no outcome markets are tracked
+- [x] **FILTER-02**: Discovery applies a configurable minimum volume filter (`MARKET_MIN_VOLUME` in USDC, default 0) — markets below threshold are skipped
+- [x] **FILTER-03**: Discovery applies a configurable minimum liquidity filter (`MARKET_MIN_LIQUIDITY` in USDC, default 0) — markets below threshold are skipped
 
 ### Trade History Ingestion
 
@@ -108,14 +108,14 @@
 | INFRA-02 | Phase 1 | Complete |
 | INFRA-03 | Phase 1 | Complete |
 | INFRA-04 | Phase 2 | Complete |
-| INFRA-06 | Phase 2 | Pending |
-| INFRA-07 | Phase 2 | Pending |
+| INFRA-06 | Phase 2 | Complete |
+| INFRA-07 | Phase 2 | Complete |
 | CLIENT-01 | Phase 1 | Complete |
 | CLIENT-03 | Phase 1 | Complete |
 | CLIENT-04 | Phase 3 | Pending |
-| FILTER-01 | Phase 2 | Pending |
-| FILTER-02 | Phase 2 | Pending |
-| FILTER-03 | Phase 2 | Pending |
+| FILTER-01 | Phase 2 | Complete |
+| FILTER-02 | Phase 2 | Complete |
+| FILTER-03 | Phase 2 | Complete |
 | HIST-01 | Phase 3 | Pending |
 | HIST-02 | Phase 3 | Pending |
 | HIST-03 | Phase 3 | Pending |
