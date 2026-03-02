@@ -9,6 +9,7 @@ from arbiter.clients.polymarket import PolymarketClient
 from arbiter.config import load_settings, print_config_summary
 from arbiter.db.session import make_engine, make_session_factory
 from arbiter.discovery.loop import discovery_loop
+from arbiter.ingestion.trades import ingestion_loop
 
 
 def configure_logging(level: str = "INFO", verbose: bool = False) -> None:
@@ -97,7 +98,7 @@ async def main(args: argparse.Namespace, settings) -> None:
 
     # Normal startup: run checks then continue to service loops
     await run_checks(settings)
-    logging.info("Service ready. Starting discovery loop.")
+    logging.info("Service ready. Starting discovery and ingestion loops.")
 
     engine = make_engine(settings.database_url)
     session_factory = make_session_factory(engine)
@@ -106,6 +107,7 @@ async def main(args: argparse.Namespace, settings) -> None:
         async with PolymarketClient() as client:
             await asyncio.gather(
                 discovery_loop(settings, session_factory, client),
+                ingestion_loop(settings, session_factory, client),
             )
     finally:
         await engine.dispose()
