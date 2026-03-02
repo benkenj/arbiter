@@ -44,6 +44,7 @@ class Trade(Base):
     size: Mapped[float] = mapped_column(Float, nullable=False)
     price: Mapped[float] = mapped_column(Float, nullable=False)
     timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    outcome: Mapped[Optional[str]] = mapped_column(String(10), nullable=True)
 
 
 class Wallet(Base):
