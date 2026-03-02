@@ -7,7 +7,8 @@ from sqlalchemy import text
 
 from arbiter.clients.polymarket import PolymarketClient
 from arbiter.config import load_settings, print_config_summary
-from arbiter.db.session import make_engine
+from arbiter.db.session import make_engine, make_session_factory
+from arbiter.discovery.loop import discovery_loop
 
 
 def configure_logging(level: str = "INFO", verbose: bool = False) -> None:
@@ -22,7 +23,7 @@ def configure_logging(level: str = "INFO", verbose: bool = False) -> None:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Arbiter signal detection service",
+        description="Arbiter whale copy-trading alert service",
         prog="arbiter",
     )
     parser.add_argument(
@@ -96,8 +97,18 @@ async def main(args: argparse.Namespace, settings) -> None:
 
     # Normal startup: run checks then continue to service loops
     await run_checks(settings)
-    logging.info("Service ready. (Polling loops will be implemented in Phase 2.)")
-    # Phase 2 will replace this with asyncio.gather(discovery_loop(), polling_loop())
+    logging.info("Service ready. Starting discovery loop.")
+
+    engine = make_engine(settings.database_url)
+    session_factory = make_session_factory(engine)
+
+    try:
+        async with PolymarketClient() as client:
+            await asyncio.gather(
+                discovery_loop(settings, session_factory, client),
+            )
+    finally:
+        await engine.dispose()
 
 
 def main_sync() -> None:
