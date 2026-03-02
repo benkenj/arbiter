@@ -11,7 +11,7 @@
 - [x] **INFRA-01**: System loads all configuration from environment variables with validation at startup
 - [x] **INFRA-02**: System fails fast with a clear error message if any required config is missing
 - [x] **INFRA-03**: PostgreSQL database schema is managed with Alembic migrations
-- [ ] **INFRA-04**: System runs a continuous market discovery loop (every ~5 minutes) that fetches active Polymarket markets matching configured filters and upserts them to the DB
+- [x] **INFRA-04**: System runs a continuous market discovery loop (every ~5 minutes) that fetches active Polymarket markets matching configured filters and upserts them to the DB
 - [ ] **INFRA-06**: Discovery loop recovers from transient errors (API failures, DB errors) without crashing the process
 - [ ] **INFRA-07**: Discovery loop emits a heartbeat log line each cycle so silence is detectable
 
@@ -107,7 +107,7 @@
 | INFRA-01 | Phase 1 | Complete |
 | INFRA-02 | Phase 1 | Complete |
 | INFRA-03 | Phase 1 | Complete |
-| INFRA-04 | Phase 2 | Pending |
+| INFRA-04 | Phase 2 | Complete |
 | INFRA-06 | Phase 2 | Pending |
 | INFRA-07 | Phase 2 | Pending |
 | CLIENT-01 | Phase 1 | Complete |
