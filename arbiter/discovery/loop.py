@@ -110,7 +110,11 @@ async def run_discovery_cycle(
 ) -> tuple[int, int, int]:
     all_markets = await client.fetch_all_active_markets()
     passing, filtered_out = _apply_filters(all_markets, settings)
-    market_rows = [_to_db_row(m) for m in passing]
+    # Deduplicate by external_id — API occasionally returns the same market on multiple pages
+    seen: dict[str, dict] = {}
+    for m in passing:
+        seen[m.id] = _to_db_row(m)
+    market_rows = list(seen.values())
 
     async with session_factory() as session:
         upserted = await upsert_markets(session, market_rows)
