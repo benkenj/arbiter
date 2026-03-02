@@ -94,13 +94,7 @@ def downgrade() -> None:
     op.drop_column("markets", "last_ingested_at")
     op.drop_column("markets", "condition_id")
 
-    # 5. Re-create signal_status enum
-    op.execute(
-        "CREATE TYPE signal_status AS ENUM "
-        "('active', 'resolved_correct', 'resolved_incorrect', 'expired', 'void')"
-    )
-
-    # 6. Re-create signals table + index
+    # 5+6. Re-create signals table + index (SQLAlchemy auto-creates signal_status enum)
     op.create_table(
         "signals",
         sa.Column("id", sa.Integer(), primary_key=True),
@@ -120,7 +114,6 @@ def downgrade() -> None:
                 "expired",
                 "void",
                 name="signal_status",
-                create_type=False,
             ),
             nullable=False,
             server_default="active",

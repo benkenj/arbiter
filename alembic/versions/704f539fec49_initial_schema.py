@@ -17,11 +17,6 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    op.execute(
-        "CREATE TYPE signal_status AS ENUM "
-        "('active', 'resolved_correct', 'resolved_incorrect', 'expired', 'void')"
-    )
-
     op.create_table(
         "markets",
         sa.Column("id", sa.Integer(), primary_key=True),
@@ -59,7 +54,6 @@ def upgrade() -> None:
                 "expired",
                 "void",
                 name="signal_status",
-                create_type=False,
             ),
             nullable=False,
             server_default="active",
