@@ -273,3 +273,34 @@ class TestRunIngestionCycle:
 
         processed, _, _ = await run_ingestion_cycle(settings, factory, client)
         assert processed == 2  # batch_size=2, not all 5
+
+
+# ---------------------------------------------------------------------------
+# TestIngestionCallsScoring
+# ---------------------------------------------------------------------------
+
+class TestIngestionCallsScoring:
+    async def test_score_called_after_cycle(self):
+        from unittest.mock import AsyncMock, patch
+
+        settings = MagicMock()
+        settings.ingestion_batch_size = 100
+        settings.ingestion_page_size = 500
+
+        mock_result = MagicMock()
+        mock_result.scalars.return_value.all.return_value = []
+        session = AsyncMock()
+        session.execute = AsyncMock(return_value=mock_result)
+        session.__aenter__ = AsyncMock(return_value=session)
+        session.__aexit__ = AsyncMock(return_value=False)
+
+        factory = MagicMock(return_value=session)
+
+        mock_client = AsyncMock()
+
+        with patch("arbiter.ingestion.trades.score_all_wallets", new_callable=AsyncMock) as mock_score:
+            mock_score.return_value = 0
+            result = await run_ingestion_cycle(settings, factory, mock_client)
+
+        assert mock_score.called, "score_all_wallets should be called after ingestion cycle"
+        assert len(result) == 3  # (processed, total_trades, failures)

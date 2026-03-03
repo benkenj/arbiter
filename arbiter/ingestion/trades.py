@@ -8,6 +8,7 @@ from sqlalchemy import insert as sa_insert, select
 from arbiter.clients.polymarket import PolymarketClient, Trade as ClientTrade
 from arbiter.config import Settings
 from arbiter.db.models import Market, Trade
+from arbiter.scoring.whales import score_all_wallets
 
 logger = logging.getLogger(__name__)
 
@@ -95,6 +96,14 @@ async def run_ingestion_cycle(
                 cid_prefix,
                 exc,
             )
+
+    # Score all wallets after each ingestion cycle
+    try:
+        async with session_factory() as scoring_session:
+            scored = await score_all_wallets(scoring_session, settings)
+            logger.info("[ingestion] scored %d wallets after cycle", scored)
+    except Exception as exc:
+        logger.error("[ingestion] scoring failed: %s", exc)
 
     return processed, total_trades, failures
 
