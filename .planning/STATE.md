@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-03-03T01:18:52.585Z"
+last_updated: "2026-03-03T02:52:18.230Z"
 progress:
-  total_phases: 3
+  total_phases: 4
   completed_phases: 3
-  total_plans: 9
-  completed_plans: 9
+  total_plans: 12
+  completed_plans: 10
 ---
 
 # Project State
@@ -18,14 +18,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-22)
 
 **Core value:** Alert when high-performing Polymarket traders open new positions, enabling copy trading decisions.
-**Current focus:** Phase 3 - Trade History (plan 3 of 3 complete — phase complete)
+**Current focus:** Phase 4 - Whale Identification (plan 1 of 3 complete)
 
 ## Current Position
 
-Phase: 3 of 6 (Trade History)
-Plan: 3 of 3 in current phase (phase complete)
+Phase: 4 of 6 (Whale Identification)
+Plan: 1 of 3 in current phase
 Status: In Progress
-Last activity: 2026-03-02 — Completed 03-03-PLAN.md: trade ingestion loop with watermark, failure isolation, wired into main.py
+Last activity: 2026-03-03 — Completed 04-01-PLAN.md: migration 004 adding win_volume, total_pnl, pnl_trend to wallets; Wallet ORM model updated
 
 Progress: [███████░░░] 70%
 
@@ -49,6 +49,7 @@ Progress: [███████░░░] 70%
 - Trend: On track
 
 *Updated after each plan completion*
+| Phase 04-whale-identification P01 | 1 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -87,6 +88,7 @@ Recent decisions affecting current work:
 - [03-03]: Append-only sa_insert(Trade) — no ON CONFLICT; watermark in get_trades_for_market() ensures only new trades are returned
 - [03-03]: Session-per-market re-fetch — Market row re-fetched via session.get() inside each fresh session to avoid DetachedInstanceError on last_ingested_at update
 - [03-03]: ingestion_batch_size cap applied as slice before the loop — simple rate-limit guard for Data API requests per cycle
+- [Phase 04-01]: win_volume, total_pnl, pnl_trend all nullable Float — NULL is correct until scoring engine runs
 
 ### Pending Todos
 
@@ -101,6 +103,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-02
-Stopped at: Completed 03-03-PLAN.md — trade ingestion loop with watermark, failure isolation, wired into main.py
+Last session: 2026-03-03
+Stopped at: Completed 04-01-PLAN.md — migration 004 adding win_volume, total_pnl, pnl_trend to wallets; Wallet ORM model updated
 Resume file: None

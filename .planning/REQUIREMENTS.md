@@ -35,10 +35,10 @@
 
 ### Whale Identification
 
-- [ ] **WHALE-01**: Scoring computes win_rate (correct resolved trades / total resolved trades) and total_volume for each wallet with trade history
+- [x] **WHALE-01**: Scoring computes win_rate (correct resolved trades / total resolved trades) and total_volume for each wallet with trade history
 - [ ] **WHALE-02**: Wallets with fewer than `WHALE_MIN_TRADES` resolved trades are excluded from whale classification (configurable, default 10)
 - [ ] **WHALE-03**: Wallets meeting both `WHALE_MIN_WIN_RATE` (configurable, default 0.6) and `WHALE_MIN_VOLUME` (configurable, default 1000 USDC) are flagged `is_tracked = true`
-- [ ] **WHALE-04**: Scoring upserts the wallets table — re-running does not duplicate records
+- [x] **WHALE-04**: Scoring upserts the wallets table — re-running does not duplicate records
 - [ ] **WHALE-05**: Scoring runs on a configurable periodic interval (`WHALE_SCORE_INTERVAL_SECONDS`)
 
 ### CLI
@@ -119,10 +119,10 @@
 | HIST-01 | Phase 3 | Complete |
 | HIST-02 | Phase 3 | Complete |
 | HIST-03 | Phase 3 | Complete |
-| WHALE-01 | Phase 4 | Pending |
+| WHALE-01 | Phase 4 | Complete |
 | WHALE-02 | Phase 4 | Pending |
 | WHALE-03 | Phase 4 | Pending |
-| WHALE-04 | Phase 4 | Pending |
+| WHALE-04 | Phase 4 | Complete |
 | WHALE-05 | Phase 4 | Pending |
 | CLI-01 | Phase 4 | Pending |
 | CLI-02 | Phase 4 | Pending |
