@@ -59,6 +59,9 @@ class Wallet(Base):
     score: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     last_scored_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
     is_tracked: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default="false")
+    win_volume: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    total_pnl: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    pnl_trend: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
 
 
 class Position(Base):
