@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-03-03T02:56:40.114Z"
+last_updated: "2026-03-03T03:02:02.416Z"
 progress:
   total_phases: 4
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 12
-  completed_plans: 11
+  completed_plans: 12
 ---
 
 # Project State
@@ -18,14 +18,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-22)
 
 **Core value:** Alert when high-performing Polymarket traders open new positions, enabling copy trading decisions.
-**Current focus:** Phase 4 - Whale Identification (plan 2 of 3 complete)
+**Current focus:** Phase 4 - Whale Identification (plan 3 of 3 complete — phase complete)
 
 ## Current Position
 
 Phase: 4 of 6 (Whale Identification)
-Plan: 2 of 3 in current phase
+Plan: 3 of 3 in current phase (phase complete)
 Status: In Progress
-Last activity: 2026-03-03 — Completed 04-02-PLAN.md: whale scoring engine with FIFO P&L, percentile ranking, config fields, unit+integration tests
+Last activity: 2026-03-03 — Completed 04-03-PLAN.md: wired scoring into ingestion loop, added arbiter whales CLI subcommand
 
 Progress: [███████░░░] 70%
 
@@ -51,6 +51,7 @@ Progress: [███████░░░] 70%
 *Updated after each plan completion*
 | Phase 04-whale-identification P01 | 1 | 2 tasks | 2 files |
 | Phase 04-whale-identification P02 | 3 | 1 tasks | 5 files |
+| Phase 04-whale-identification P03 | 3 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -94,6 +95,9 @@ Recent decisions affecting current work:
 - [Phase 04-02]: pg_insert mocked in aiosqlite integration tests — PostgreSQL-only dialect cannot run against SQLite
 - [Phase 04-02]: percentile_ranks uses rank/n normalization on sorted unique values — handles ties, single-value returns 0.5
 - [Phase 04-02]: whale_score_interval_seconds is informational only — scoring runs inside ingestion_loop per CONTEXT.md lock
+- [Phase 04-03]: score_all_wallets called in fresh session after market loop; scoring errors logged but do not fail ingestion
+- [Phase 04-03]: getattr(args, 'command', None) used in main_sync() for backward-compat subparser dispatch
+- [Phase 04-03]: --mode and --days recompute display rank in memory via _apply_scores; wallets table never written during CLI display
 
 ### Pending Todos
 
@@ -109,5 +113,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-03
-Stopped at: Completed 04-02-PLAN.md — whale scoring engine with FIFO P&L, percentile ranking, config fields, unit+integration tests
+Stopped at: Completed 04-03-PLAN.md — wired scoring into ingestion loop, added arbiter whales CLI subcommand with --all/--mode/--days
 Resume file: None

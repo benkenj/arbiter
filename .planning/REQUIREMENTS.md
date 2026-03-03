@@ -43,9 +43,9 @@
 
 ### CLI
 
-- [ ] **CLI-01**: `arbiter whales` command displays the current tracked whale list: wallet address (abbreviated), win rate, total volume, total trades, score — sorted by score descending
-- [ ] **CLI-02**: `arbiter whales --all` includes non-tracked wallets (below threshold) so the user can inspect borderline cases and tune thresholds
-- [ ] **CLI-03**: `arbiter whales <address>` shows full detail for a single wallet: all stats plus recent trade history summary
+- [x] **CLI-01**: `arbiter whales` command displays the current tracked whale list: wallet address (abbreviated), win rate, total volume, total trades, score — sorted by score descending
+- [x] **CLI-02**: `arbiter whales --all` includes non-tracked wallets (below threshold) so the user can inspect borderline cases and tune thresholds
+- [x] **CLI-03**: `arbiter whales <address>` shows full detail for a single wallet: all stats plus recent trade history summary
 
 ### Price Impact Analysis
 
@@ -124,9 +124,9 @@
 | WHALE-03 | Phase 4 | Complete |
 | WHALE-04 | Phase 4 | Complete |
 | WHALE-05 | Phase 4 | Complete |
-| CLI-01 | Phase 4 | Pending |
-| CLI-02 | Phase 4 | Pending |
-| CLI-03 | Phase 4 | Pending |
+| CLI-01 | Phase 4 | Complete |
+| CLI-02 | Phase 4 | Complete |
+| CLI-03 | Phase 4 | Complete |
 | IMPACT-01 | Phase 5 | Pending |
 | IMPACT-02 | Phase 5 | Pending |
 | IMPACT-03 | Phase 5 | Pending |
