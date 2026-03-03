@@ -1,5 +1,5 @@
 """Unit tests for whale scoring logic — no DB required."""
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 import pytest
 
@@ -247,3 +247,132 @@ class TestPercentileRanks:
         # 1.0 maps to rank 0 / (2-1) = 0.0, 3.0 maps to 1.0
         assert result[0] == result[1]
         assert result[2] == 1.0
+
+    def test_empty_list_returns_empty(self):
+        from arbiter.scoring.whales import percentile_ranks
+
+        assert percentile_ranks([]) == []
+
+
+class TestComputePnlEdgeCases:
+    def test_multiple_fifo_lots_matched_in_order(self):
+        from arbiter.scoring.whales import compute_pnl_for_market
+
+        trades = [
+            make_trade(side="BUY", size=5, price=0.30, timestamp=datetime(2025, 1, 1, tzinfo=timezone.utc)),
+            make_trade(side="BUY", size=5, price=0.60, timestamp=datetime(2025, 1, 2, tzinfo=timezone.utc)),
+            make_trade(side="SELL", size=10, price=0.80, timestamp=datetime(2025, 1, 3, tzinfo=timezone.utc)),
+        ]
+        # Lot 1: 5 @ 0.30 sold @ 0.80 → 5 * 0.50 = 2.50
+        # Lot 2: 5 @ 0.60 sold @ 0.80 → 5 * 0.20 = 1.00
+        # Total = 3.50, buys empty → is_win = True
+        pnl, is_win = compute_pnl_for_market(trades)
+        assert abs(pnl - 3.50) < 1e-9
+        assert is_win is True
+
+    def test_sell_exceeds_available_buys(self):
+        from arbiter.scoring.whales import compute_pnl_for_market
+
+        trades = [
+            make_trade(side="BUY", size=3, price=0.50, timestamp=datetime(2025, 1, 1, tzinfo=timezone.utc)),
+            make_trade(side="SELL", size=5, price=0.80, timestamp=datetime(2025, 1, 2, tzinfo=timezone.utc)),
+        ]
+        # Only 3 shares available; excess sell size is dropped when deque empties
+        # pnl = 3 * (0.80 - 0.50) = 0.90
+        pnl, is_win = compute_pnl_for_market(trades)
+        assert abs(pnl - 0.90) < 1e-9
+        assert is_win is True
+
+
+class TestPnlTrendSlope:
+    def test_positive_slope(self):
+        from arbiter.scoring.whales import pnl_trend_slope
+
+        t0 = datetime(2025, 1, 1, tzinfo=timezone.utc)
+        t1 = t0 + timedelta(days=1)
+        # P&L rises from 0 to 10 over 1 day → slope = 10.0 USDC/day
+        assert abs(pnl_trend_slope([(t0, 0.0), (t1, 10.0)]) - 10.0) < 1e-9
+
+    def test_negative_slope(self):
+        from arbiter.scoring.whales import pnl_trend_slope
+
+        t0 = datetime(2025, 1, 1, tzinfo=timezone.utc)
+        t1 = t0 + timedelta(days=1)
+        assert abs(pnl_trend_slope([(t0, 10.0), (t1, 0.0)]) - (-10.0)) < 1e-9
+
+    def test_flat_pnl_returns_zero(self):
+        from arbiter.scoring.whales import pnl_trend_slope
+
+        t0 = datetime(2025, 1, 1, tzinfo=timezone.utc)
+        t1 = t0 + timedelta(days=1)
+        assert pnl_trend_slope([(t0, 5.0), (t1, 5.0)]) == 0.0
+
+    def test_all_same_timestamp_returns_zero(self):
+        # denominator is 0 when all times are identical — guard must return 0.0
+        from arbiter.scoring.whales import pnl_trend_slope
+
+        t0 = datetime(2025, 1, 1, tzinfo=timezone.utc)
+        assert pnl_trend_slope([(t0, 0.0), (t0, 10.0)]) == 0.0
+
+    def test_single_point_returns_zero(self):
+        from arbiter.scoring.whales import pnl_trend_slope
+
+        t0 = datetime(2025, 1, 1, tzinfo=timezone.utc)
+        assert pnl_trend_slope([(t0, 5.0)]) == 0.0
+
+    def test_empty_returns_zero(self):
+        from arbiter.scoring.whales import pnl_trend_slope
+
+        assert pnl_trend_slope([]) == 0.0
+
+
+class TestApplyScores:
+    def _make_rows(self):
+        # Wallet A: high pnl_trend, low win_volume
+        # Wallet B: low pnl_trend, high win_volume
+        return [
+            {
+                "address": "0xA",
+                "pnl_trend": 50.0,
+                "win_rate": 0.6,
+                "total_volume": 500.0,
+                "total_trades": 10,
+                "win_volume": 10.0,
+            },
+            {
+                "address": "0xB",
+                "pnl_trend": 1.0,
+                "win_rate": 0.6,
+                "total_volume": 500.0,
+                "total_trades": 10,
+                "win_volume": 100.0,
+            },
+        ]
+
+    def test_consistent_mode_favors_pnl_trend(self):
+        from arbiter.scoring.whales import _apply_scores
+
+        rows = self._make_rows()
+        _apply_scores(rows, mode="consistent")
+        by_addr = {r["address"]: r for r in rows}
+        # consistent: pnl_trend weight=0.50 → wallet A ranks higher
+        assert by_addr["0xA"]["score"] > by_addr["0xB"]["score"]
+
+    def test_highroller_mode_favors_win_volume(self):
+        from arbiter.scoring.whales import _apply_scores
+
+        rows = self._make_rows()
+        _apply_scores(rows, mode="highroller")
+        by_addr = {r["address"]: r for r in rows}
+        # highroller: win_volume weight=0.50 → wallet B ranks higher
+        assert by_addr["0xB"]["score"] > by_addr["0xA"]["score"]
+
+    def test_score_key_replaces_accumulator(self):
+        from arbiter.scoring.whales import _apply_scores
+
+        rows = self._make_rows()
+        _apply_scores(rows, mode="frequent")
+        for row in rows:
+            assert "score" in row
+            assert isinstance(row["score"], float)
+            assert "_score_acc" not in row

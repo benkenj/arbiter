@@ -4,7 +4,7 @@ upsert_wallet_scores uses pg_insert (PostgreSQL-only), so it is mocked here.
 We test _compute_wallet_stats, _apply_scores, _apply_is_tracked, and score_all_wallets
 independently from the upsert path.
 """
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from unittest.mock import AsyncMock, patch
 
 import pytest
@@ -155,3 +155,33 @@ class TestScoringIntegration:
                 count = await score_all_wallets(session, settings)
 
         assert count == 0
+
+    async def test_score_all_wallets_respects_days_window(self, session_factory):
+        """Trades outside whale_score_days window must be excluded from scoring."""
+        from arbiter.scoring.whales import score_all_wallets
+
+        settings = make_settings(
+            whale_min_trades=1,
+            whale_min_win_rate=0.0,
+            whale_min_volume=0.0,
+            whale_score_days=30,
+        )
+
+        now = datetime.now(tz=timezone.utc)
+        recent_ts = now - timedelta(days=1)
+        old_ts = now - timedelta(days=40)
+
+        async with session_factory() as session:
+            await seed_market(session, market_id=1, external_id="ext-old")
+            await seed_market(session, market_id=2, external_id="ext-recent")
+            # walletOLD: trade from 40 days ago — outside 30-day window
+            await seed_trade(session, "walletOLD", market_id=1, outcome="Yes", timestamp=old_ts)
+            # walletNEW: trade from yesterday — inside window
+            await seed_trade(session, "walletNEW", market_id=2, outcome="Yes", timestamp=recent_ts)
+            await session.commit()
+
+        with patch("arbiter.scoring.whales.upsert_wallet_scores", new_callable=AsyncMock):
+            async with session_factory() as session:
+                count = await score_all_wallets(session, settings)
+
+        assert count == 1, f"Expected 1 wallet in 30-day window, got {count}"
