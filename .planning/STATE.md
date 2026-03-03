@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-03-03T02:52:18.230Z"
+last_updated: "2026-03-03T02:56:40.114Z"
 progress:
   total_phases: 4
   completed_phases: 3
   total_plans: 12
-  completed_plans: 10
+  completed_plans: 11
 ---
 
 # Project State
@@ -18,14 +18,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-22)
 
 **Core value:** Alert when high-performing Polymarket traders open new positions, enabling copy trading decisions.
-**Current focus:** Phase 4 - Whale Identification (plan 1 of 3 complete)
+**Current focus:** Phase 4 - Whale Identification (plan 2 of 3 complete)
 
 ## Current Position
 
 Phase: 4 of 6 (Whale Identification)
-Plan: 1 of 3 in current phase
+Plan: 2 of 3 in current phase
 Status: In Progress
-Last activity: 2026-03-03 — Completed 04-01-PLAN.md: migration 004 adding win_volume, total_pnl, pnl_trend to wallets; Wallet ORM model updated
+Last activity: 2026-03-03 — Completed 04-02-PLAN.md: whale scoring engine with FIFO P&L, percentile ranking, config fields, unit+integration tests
 
 Progress: [███████░░░] 70%
 
@@ -50,6 +50,7 @@ Progress: [███████░░░] 70%
 
 *Updated after each plan completion*
 | Phase 04-whale-identification P01 | 1 | 2 tasks | 2 files |
+| Phase 04-whale-identification P02 | 3 | 1 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -89,6 +90,10 @@ Recent decisions affecting current work:
 - [03-03]: Session-per-market re-fetch — Market row re-fetched via session.get() inside each fresh session to avoid DetachedInstanceError on last_ingested_at update
 - [03-03]: ingestion_batch_size cap applied as slice before the loop — simple rate-limit guard for Data API requests per cycle
 - [Phase 04-01]: win_volume, total_pnl, pnl_trend all nullable Float — NULL is correct until scoring engine runs
+- [Phase 04-02]: FIFO P&L matching in Python via collections.deque — avoids complex SQL CTEs, side-agnostic, fully testable
+- [Phase 04-02]: pg_insert mocked in aiosqlite integration tests — PostgreSQL-only dialect cannot run against SQLite
+- [Phase 04-02]: percentile_ranks uses rank/n normalization on sorted unique values — handles ties, single-value returns 0.5
+- [Phase 04-02]: whale_score_interval_seconds is informational only — scoring runs inside ingestion_loop per CONTEXT.md lock
 
 ### Pending Todos
 
@@ -104,5 +109,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-03
-Stopped at: Completed 04-01-PLAN.md — migration 004 adding win_volume, total_pnl, pnl_trend to wallets; Wallet ORM model updated
+Stopped at: Completed 04-02-PLAN.md — whale scoring engine with FIFO P&L, percentile ranking, config fields, unit+integration tests
 Resume file: None
