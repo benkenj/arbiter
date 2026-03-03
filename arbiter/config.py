@@ -70,6 +70,32 @@ class Settings(BaseSettings):
         description="Maximum markets processed per ingestion cycle. Limits Data API request rate. Default: 100.",
     )
 
+    # === Whale Scoring ===
+    whale_min_trades: int = Field(
+        default=10,
+        description="Minimum resolved trades for whale classification. Default: 10.",
+    )
+    whale_min_win_rate: float = Field(
+        default=0.6,
+        description="Minimum win rate (0.0–1.0) for whale classification. Default: 0.6.",
+    )
+    whale_min_volume: float = Field(
+        default=1000.0,
+        description="Minimum total USDC volume for whale classification. Default: 1000.",
+    )
+    whale_score_mode: str = Field(
+        default="consistent",
+        description="Scoring mode: consistent | highroller | frequent. Default: consistent.",
+    )
+    whale_score_days: int = Field(
+        default=0,
+        description="Rolling window in days for scoring (0 = all-time). Default: 0.",
+    )
+    whale_score_interval_seconds: int = Field(
+        default=300,
+        description="Scoring interval in seconds (informational; scoring runs after each ingestion cycle). Default: 300.",
+    )
+
     @field_validator("database_url")
     @classmethod
     def validate_asyncpg_dialect(cls, v: str) -> str:
