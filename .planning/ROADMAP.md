@@ -82,7 +82,12 @@ Plans:
   6. `arbiter whales` prints tracked whales sorted by score with win rate, volume, and trade count
   7. `arbiter whales --all` includes below-threshold wallets for threshold tuning
   8. `arbiter whales <address>` shows full stats for a single wallet
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 04-01-PLAN.md — Alembic migration 004 (add win_volume, total_pnl, pnl_trend to wallets) + Wallet ORM update
+- [ ] 04-02-PLAN.md — Config fields + scoring engine (arbiter/scoring/whales.py) with FIFO P&L, percentile ranking, upsert
+- [ ] 04-03-PLAN.md — Ingestion loop wiring (call scoring after cycle) + CLI subcommand (arbiter whales)
 
 ### Phase 5: Price Impact Analysis
 **Goal**: For every trade ingested in Phase 3, the system captures the market price at four intervals after execution (+1min, +5min, +30min, +1hr), enabling analysis of how individual trades move markets and which wallets consistently enter before price moves.
@@ -117,6 +122,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 1. Foundation | 3/4 | In Progress | - |
 | 2. Data Collection | 2/2 | Complete   | 2026-03-02 |
 | 3. Trade History | 3/3 | Complete   | 2026-03-02 |
-| 4. Whale Identification | 0/TBD | Not started | - |
+| 4. Whale Identification | 0/3 | Not started | - |
 | 5. Price Impact Analysis | 0/TBD | Not started | - |
 | 6. Whale Monitoring + Alerts | 0/TBD | Not started | - |
